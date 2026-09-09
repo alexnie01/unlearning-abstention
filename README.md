@@ -13,6 +13,10 @@ figures, and results in this repository are new.** Nothing measured in the
 exploratory phase is reused here; where a prior observation motivates a design
 choice it is cited, not copied.
 
+See [`BACKGROUND.md`](BACKGROUND.md) for what the exploratory phase found and
+why this project's specific test follows from it, and [`PLAN.md`](PLAN.md) for
+the hour-by-hour experiment schedule and gates.
+
 ## Question
 
 Unlearning methods on TOFU (RMU, NPO, AltPO, SimNPO, GradDiff) suppress
