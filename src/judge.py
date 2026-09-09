@@ -23,6 +23,8 @@ import requests
 import torch
 from tqdm import tqdm
 
+from src.prompting import encode_chat
+
 OLLAMA_URL = "http://localhost:11434"
 
 
@@ -32,14 +34,7 @@ OLLAMA_URL = "http://localhost:11434"
 
 def generate_response(model, tokenizer, prompt, device, max_new_tokens=150):
     """Greedy chat-template generation; returns only the new text."""
-    if hasattr(tokenizer, "apply_chat_template"):
-        messages = [{"role": "user", "content": prompt}]
-        formatted = tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
-        )
-    else:
-        formatted = prompt
-    inputs = tokenizer(formatted, return_tensors="pt").to(device)
+    inputs = encode_chat(tokenizer, prompt, device)
     with torch.no_grad():
         outputs = model.generate(
             **inputs, max_new_tokens=max_new_tokens,
