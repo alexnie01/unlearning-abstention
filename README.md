@@ -55,6 +55,18 @@ construction and serve as the **positive control** this test was missing:
 
 ## Results (2026-09-09)
 
+**TL;DR.** The positive control works: IdkDPO/IdkNLL abstain where the oracle
+confabulates, an epistemic direction extracted from IdkDPO separates
+abstention from answering out of sample, causally makes the *base* model say
+"I don't know" at layer 8, and the two abstention finetunes move forget
+representations the same way (cos 0.43–0.64). Against that instrument, no
+unlearning method behaves like learned abstention: only AltPO's forget-specific
+shift resembles the abstention finetunes' (cos ≈ 0.2–0.3 with both), and
+subtracting the direction restores answers in nothing — not AltPO, not RMU,
+not even IdkDPO. Whatever RMU/NPO/AltPO/SimNPO/GradDiff do to forget-set
+facts, it is not a removable epistemic-refusal gate. The oracle's
+confabulation wall persists at 8B.
+
 Full tables and figures live under `results/<experiment>/summary.md`. All
 numbers use 100 forget10 and 100 retain90 questions (seeded, author-stratified),
 the chat template with a fixed system prompt, and the base→unlearned shift of
