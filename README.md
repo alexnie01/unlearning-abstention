@@ -67,8 +67,9 @@ still ranking the true answer above five surface-matched false ones at the
 base model's rate*. That cell — knows and abstains — is occupied only by a
 checkpoint trained to occupy it. The five methods split two ways instead:
 NPO, GradDiff and SimNPO keep the answer ranking and confabulate a different
-fact; RMU and AltPO lose the ranking too (below the never-trained oracle's
-floor). A direction extracted from abstention behaviour does causally install
+fact (NPO ranks the truth as well as the base model while stating it 3% of the
+time, against base's 39%); RMU and AltPO lose the ranking too, falling below
+the never-trained oracle's floor. A direction extracted from abstention behaviour does causally install
 abstention in the base model at layer 8, so the instrument works — but
 subtracting it restores answers in nothing, not even in the abstention
 checkpoints. Details in [`PLAN2.md`](PLAN2.md); the confabulation wall
@@ -221,10 +222,39 @@ that matters.
 
 ![knowledge vs abstention](results/06_knowledge_probe/knowledge_vs_abstention.png)
 
-**A caveat on the word "knows."** This measures *recognition* — ranking the
-true answer above lures — not *recall*. NPO ranks the truth at base level and
-then greedily generates "Hsiao Yun-Hwa's father is a renowned podiatrist."
-Experiment 09 judges the generations for the gold fact to separate the two.
+**09 — recognition is not recall, and the gap is where unlearning lives.**
+Judging each model's own generations against the gold fact (a fluent wrong
+biography counts as NO):
+
+| model | recall | recognition | abstains |
+|-------|-------:|------------:|---------:|
+| base | 0.39 | 0.69 | 1% |
+| GradDiff | 0.20 | 0.65 | 0% |
+| SimNPO | 0.07 | 0.54 | 0% |
+| NPO | 0.03 | 0.68 | 0% |
+| IdkNLL | 0.01 | 0.68 | 95% |
+| IdkDPO / RMU / AltPO | ≤0.01 | 0.26 / 0.15 / 0.28 | 41% / 1% / 0% |
+
+Base recall is 0.39, not 1.0 — many TOFU questions are open-ended ("what themes
+does X explore"), so treat 0.39 as this metric's ceiling. NPO is the sharp
+case: it ranks the true answer as well as the base model (0.68) and states it
+3% of the time, versus base's 39%. So "knows but doesn't say" is real for
+NPO — but what it says instead is a confident wrong fact, not "I don't know."
+Unlearning here suppresses *production* while leaving *recognition* intact,
+which is a different phenomenon from learned abstention and one that a
+generation-only evaluation would score as successful forgetting.
+
+**08 — an instrument that failed, recorded as such.** To test whether the
+low-recognition models still *represent* correctness internally, I trained a
+linear probe on answer-final activations to separate true from perturbed
+answers. It fails its own calibration: the retain90 oracle, which cannot know
+these facts, scores 0.744 where base scores 0.789 — a span of 0.065, against
+0.31 for the same contrast read off the output distribution. The probe detects
+how plausibly a candidate answer continues the question, not whether it is
+true, so **no conclusion about retained knowledge follows from it** — in
+particular RMU's 0.789 is not evidence that it represents the forgotten facts.
+A usable version needs a contrast the oracle provably fails, verified before
+any method is read off it.
 
 **05 — the confabulation wall is not a 1B artifact.** On 50 forget10
 questions, the retain90 oracle abstains 0/50 at 1B and 0/50 at 8B (judge
