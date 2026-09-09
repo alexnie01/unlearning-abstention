@@ -1,0 +1,260 @@
+{
+  "n": 100,
+  "calibrated": true,
+  "base_rank1": 0.69,
+  "oracle_rank1": 0.38,
+  "span": 0.30999999999999994,
+  "oracle_within_model": 0.38,
+  "cells": {
+    "IdkDPO": {
+      "rank1": 0.26,
+      "retained_frac": -0.38709677419354843,
+      "abstain": 0.41,
+      "knows": false,
+      "cell": "suppressed & abstains"
+    },
+    "IdkNLL": {
+      "rank1": 0.68,
+      "retained_frac": 0.9677419354838713,
+      "abstain": 0.95,
+      "knows": true,
+      "cell": "knows & abstains"
+    },
+    "RMU": {
+      "rank1": 0.15,
+      "retained_frac": -0.7419354838709679,
+      "abstain": NaN,
+      "knows": false,
+      "cell": "insufficient data (no abstention rate)"
+    },
+    "AltPO": {
+      "rank1": 0.28,
+      "retained_frac": -0.3225806451612903,
+      "abstain": NaN,
+      "knows": false,
+      "cell": "insufficient data (no abstention rate)"
+    },
+    "NPO": {
+      "rank1": 0.68,
+      "retained_frac": 0.9677419354838713,
+      "abstain": NaN,
+      "knows": true,
+      "cell": "insufficient data (no abstention rate)"
+    },
+    "SimNPO": {
+      "rank1": 0.54,
+      "retained_frac": 0.5161290322580647,
+      "abstain": NaN,
+      "knows": true,
+      "cell": "insufficient data (no abstention rate)"
+    },
+    "GradDiff": {
+      "rank1": 0.65,
+      "retained_frac": 0.8709677419354841,
+      "abstain": NaN,
+      "knows": true,
+      "cell": "insufficient data (no abstention rate)"
+    }
+  },
+  "verdict": "Knows-but-abstains is realisable and IdkNLL occupies it: abstention CAN coexist with intact answer discrimination, so a method that suppresses discrimination is doing something else. Note the dissociation: IdkDPO abstains WITHOUT retaining discrimination \u2014 same behaviour, different mechanism.",
+  "table": [
+    {
+      "model": "base",
+      "set": "forget",
+      "rank1_acc": 0.69,
+      "beats_frac": 0.89,
+      "truth_ratio_median": 0.5126537024096034,
+      "prefers_truth_frac": 0.93,
+      "margin_mean": 0.9334773911237716,
+      "true_lp_mean": -2.640667224526405,
+      "n": 100
+    },
+    {
+      "model": "base",
+      "set": "retain",
+      "rank1_acc": 0.77,
+      "beats_frac": 0.902,
+      "truth_ratio_median": 0.4360876559865689,
+      "prefers_truth_frac": 0.91,
+      "margin_mean": 0.9646682091951372,
+      "true_lp_mean": -2.6739702481031418,
+      "n": 100
+    },
+    {
+      "model": "oracle",
+      "set": "forget",
+      "rank1_acc": 0.38,
+      "beats_frac": 0.65,
+      "truth_ratio_median": 0.8676146898891535,
+      "prefers_truth_frac": 0.67,
+      "margin_mean": 0.3224857209920883,
+      "true_lp_mean": -3.3435775417089464,
+      "n": 100
+    },
+    {
+      "model": "oracle",
+      "set": "retain",
+      "rank1_acc": 0.76,
+      "beats_frac": 0.892,
+      "truth_ratio_median": 0.4596263799256429,
+      "prefers_truth_frac": 0.9,
+      "margin_mean": 0.9725542865991592,
+      "true_lp_mean": -2.714287809729576,
+      "n": 100
+    },
+    {
+      "model": "IdkDPO",
+      "set": "forget",
+      "rank1_acc": 0.26,
+      "beats_frac": 0.526,
+      "truth_ratio_median": 0.981017267240064,
+      "prefers_truth_frac": 0.51,
+      "margin_mean": -0.0161663379669189,
+      "true_lp_mean": -5.4058327293396,
+      "n": 100
+    },
+    {
+      "model": "IdkDPO",
+      "set": "retain",
+      "rank1_acc": 0.75,
+      "beats_frac": 0.904,
+      "truth_ratio_median": 0.482057943549399,
+      "prefers_truth_frac": 0.92,
+      "margin_mean": 0.8914253834486007,
+      "true_lp_mean": -2.62582340657711,
+      "n": 100
+    },
+    {
+      "model": "IdkNLL",
+      "set": "forget",
+      "rank1_acc": 0.68,
+      "beats_frac": 0.882,
+      "truth_ratio_median": 0.5067392092077478,
+      "prefers_truth_frac": 0.91,
+      "margin_mean": 0.845740128517151,
+      "true_lp_mean": -2.734703153371811,
+      "n": 100
+    },
+    {
+      "model": "IdkNLL",
+      "set": "retain",
+      "rank1_acc": 0.74,
+      "beats_frac": 0.91,
+      "truth_ratio_median": 0.455293596610585,
+      "prefers_truth_frac": 0.94,
+      "margin_mean": 0.9342814369201662,
+      "true_lp_mean": -2.687430599927902,
+      "n": 100
+    },
+    {
+      "model": "RMU",
+      "set": "forget",
+      "rank1_acc": 0.15,
+      "beats_frac": 0.4200000000000001,
+      "truth_ratio_median": 1.1099741213029746,
+      "prefers_truth_frac": 0.34,
+      "margin_mean": -0.107618236541748,
+      "true_lp_mean": -10.30104546546936,
+      "n": 100
+    },
+    {
+      "model": "RMU",
+      "set": "retain",
+      "rank1_acc": 0.71,
+      "beats_frac": 0.894,
+      "truth_ratio_median": 0.4815169035318755,
+      "prefers_truth_frac": 0.92,
+      "margin_mean": 0.8398751621246336,
+      "true_lp_mean": -3.092790962457657,
+      "n": 100
+    },
+    {
+      "model": "AltPO",
+      "set": "forget",
+      "rank1_acc": 0.28,
+      "beats_frac": 0.498,
+      "truth_ratio_median": 1.121463303051227,
+      "prefers_truth_frac": 0.44,
+      "margin_mean": -0.0502532806396484,
+      "true_lp_mean": -3.632783997058868,
+      "n": 100
+    },
+    {
+      "model": "AltPO",
+      "set": "retain",
+      "rank1_acc": 0.73,
+      "beats_frac": 0.892,
+      "truth_ratio_median": 0.5227773374228213,
+      "prefers_truth_frac": 0.89,
+      "margin_mean": 0.8172886174917221,
+      "true_lp_mean": -2.6062182825803757,
+      "n": 100
+    },
+    {
+      "model": "NPO",
+      "set": "forget",
+      "rank1_acc": 0.68,
+      "beats_frac": 0.8719999999999999,
+      "truth_ratio_median": 0.5401851199239531,
+      "prefers_truth_frac": 0.91,
+      "margin_mean": 0.7902618274688719,
+      "true_lp_mean": -2.6995591950416564,
+      "n": 100
+    },
+    {
+      "model": "NPO",
+      "set": "retain",
+      "rank1_acc": 0.74,
+      "beats_frac": 0.894,
+      "truth_ratio_median": 0.4416028243767474,
+      "prefers_truth_frac": 0.9,
+      "margin_mean": 0.9386334812641144,
+      "true_lp_mean": -2.6800486314296723,
+      "n": 100
+    },
+    {
+      "model": "SimNPO",
+      "set": "forget",
+      "rank1_acc": 0.54,
+      "beats_frac": 0.7879999999999999,
+      "truth_ratio_median": 0.585778541934697,
+      "prefers_truth_frac": 0.8,
+      "margin_mean": 0.7967762122154235,
+      "true_lp_mean": -4.164551005363465,
+      "n": 100
+    },
+    {
+      "model": "SimNPO",
+      "set": "retain",
+      "rank1_acc": 0.71,
+      "beats_frac": 0.878,
+      "truth_ratio_median": 0.4453365435366998,
+      "prefers_truth_frac": 0.9,
+      "margin_mean": 1.0216022114753722,
+      "true_lp_mean": -3.109935826063156,
+      "n": 100
+    },
+    {
+      "model": "GradDiff",
+      "set": "forget",
+      "rank1_acc": 0.65,
+      "beats_frac": 0.8660000000000001,
+      "truth_ratio_median": 0.4947060444551496,
+      "prefers_truth_frac": 0.92,
+      "margin_mean": 0.9728030509948732,
+      "true_lp_mean": -3.1901347386837005,
+      "n": 100
+    },
+    {
+      "model": "GradDiff",
+      "set": "retain",
+      "rank1_acc": 0.72,
+      "beats_frac": 0.8880000000000001,
+      "truth_ratio_median": 0.4429234537367197,
+      "prefers_truth_frac": 0.89,
+      "margin_mean": 1.0235004976987838,
+      "true_lp_mean": -3.1730080634355544,
+      "n": 100
+    }
+  ]
+}

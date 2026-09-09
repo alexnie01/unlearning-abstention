@@ -22,7 +22,7 @@ import pandas as pd
 import transformers
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from src.config import BASE_MODEL, POSITIVE_CONTROLS, checkpoint
+from src.config import BASE_MODEL, METHODS_UNDER_TEST, POSITIVE_CONTROLS, checkpoint
 from src.data import matched_sample
 from src.judge import (EPISTEMIC_RUBRIC, IdkMatcher, ensure_ollama_running, generate_and_save,
                        run_judges_adjudicated)
@@ -34,7 +34,7 @@ OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "results", 
 # llama3.2 + regex label every row; deepseek-r1 (~15 s/row) only adjudicates
 # disagreements and a 10% audit sample.
 FAST_JUDGE, SLOW_JUDGE = "llama3.2", "deepseek-r1:latest"
-MODELS = {"base": BASE_MODEL, **{m: checkpoint(m) for m in POSITIVE_CONTROLS}}
+MODELS = {"base": BASE_MODEL, **{m: checkpoint(m) for m in POSITIVE_CONTROLS + METHODS_UNDER_TEST}}
 
 # Cheap first-pass flag from the 99 training IDK strings, not the verdict.
 IDK_RE = IdkMatcher()
@@ -98,7 +98,8 @@ def phase_summarize():
     print("\n" + tab.to_string(index=False, float_format=lambda x: f"{x:.2f}"))
 
     def rate(m, c):
-        return float(tab[(tab.model == m) & (tab.cls == c)]["abstain_judge_majority"].iloc[0])
+        sub = tab[(tab.model == m) & (tab.cls == c)]["abstain_judge_majority"]
+        return float(sub.iloc[0]) if len(sub) else float("nan")
 
     # "Populated" means enough abstained-forget rows for a centroid (>=30 of
     # 100) with the behavior specific to forget10 — not a majority.
