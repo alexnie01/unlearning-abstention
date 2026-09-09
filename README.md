@@ -141,9 +141,12 @@ control):
   is not: +c only degenerates output ("never never never").
 - *Toward answering (−c), any layer or magnitude.* No unlearned model recovers
   its answers. IdkDPO's gold log-prob moves −5.3 → −4.6 at best (−2×gap) and
-  its text becomes incoherent by −4×; AltPO moves −3.35 → −3.13; RMU (04,
-  layer 12) gains 0.7 nats of gold *and* 1.3 nats of IDK log-prob — the
-  coherence effect the exploratory phase documented, not a gate opening.
+  its text becomes incoherent by −4×; AltPO moves −3.35 → −3.13; RMU's gold
+  log-prob stays at −9 to −10 at every magnitude and its text stays
+  gibberish, while at +4×gap even RMU emits "There is no information
+  whatsoever" (IDK −10.5 → −4.3). Where −c helps at all it lifts gold *and*
+  IDK log-prob together — the coherence effect the exploratory phase
+  documented, not a gate opening.
 
 ![magnitude sweep](results/04b_magnitude_sweep/sweep.png)
 

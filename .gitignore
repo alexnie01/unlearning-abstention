@@ -21,3 +21,5 @@ __pycache__/
 
 # small, needed for the IDK phrase matcher
 !data/idk.jsonl
+results/**/*.log
+results/*.log

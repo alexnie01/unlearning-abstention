@@ -104,6 +104,40 @@
 | AltPO   |      12 | content     |      2 |   7.680 |    -3.134 |   -5.850 |
 | AltPO   |      12 | content     |      4 |  15.360 |    -4.457 |   -7.065 |
 | AltPO   |      12 | content     |      8 |  30.721 |    -8.168 |   -9.839 |
+| RMU     |       8 | epistemic   |     -8 | -14.276 |    -8.933 |  -10.710 |
+| RMU     |       8 | epistemic   |     -4 |  -7.138 |    -9.644 |  -12.133 |
+| RMU     |       8 | epistemic   |     -2 |  -3.569 |    -9.728 |  -11.072 |
+| RMU     |       8 | epistemic   |     -1 |  -1.785 |   -10.101 |  -10.900 |
+| RMU     |       8 | epistemic   |      0 |   0.000 |   -10.013 |  -10.496 |
+| RMU     |       8 | epistemic   |      1 |   1.785 |    -9.217 |   -8.420 |
+| RMU     |       8 | epistemic   |      2 |   3.569 |    -8.129 |   -5.946 |
+| RMU     |       8 | epistemic   |      4 |   7.138 |    -8.875 |   -4.335 |
+| RMU     |       8 | epistemic   |      8 |  14.276 |   -12.046 |   -9.780 |
+| RMU     |       8 | content     |     -8 | -14.276 |    -9.095 |  -11.211 |
+| RMU     |       8 | content     |     -4 |  -7.138 |    -9.174 |  -10.170 |
+| RMU     |       8 | content     |     -2 |  -3.569 |    -9.680 |  -10.584 |
+| RMU     |       8 | content     |     -1 |  -1.785 |    -9.977 |  -10.711 |
+| RMU     |       8 | content     |      1 |   1.785 |    -9.845 |   -9.896 |
+| RMU     |       8 | content     |      2 |   3.569 |    -9.136 |   -8.944 |
+| RMU     |       8 | content     |      4 |   7.138 |    -7.120 |   -7.927 |
+| RMU     |       8 | content     |      8 |  14.276 |    -9.460 |  -10.042 |
+| RMU     |      12 | epistemic   |     -8 | -30.721 |   -11.606 |   -9.581 |
+| RMU     |      12 | epistemic   |     -4 | -15.360 |    -9.786 |   -7.438 |
+| RMU     |      12 | epistemic   |     -2 |  -7.680 |    -9.139 |   -7.891 |
+| RMU     |      12 | epistemic   |     -1 |  -3.840 |    -9.315 |   -9.212 |
+| RMU     |      12 | epistemic   |      0 |   0.000 |   -10.013 |  -10.496 |
+| RMU     |      12 | epistemic   |      1 |   3.840 |   -10.913 |  -11.158 |
+| RMU     |      12 | epistemic   |      2 |   7.680 |   -11.311 |  -11.414 |
+| RMU     |      12 | epistemic   |      4 |  15.360 |   -11.571 |  -12.683 |
+| RMU     |      12 | epistemic   |      8 |  30.721 |   -11.728 |  -13.393 |
+| RMU     |      12 | content     |     -8 | -30.721 |   -12.800 |  -11.361 |
+| RMU     |      12 | content     |     -4 | -15.360 |   -11.281 |  -10.395 |
+| RMU     |      12 | content     |     -2 |  -7.680 |   -10.369 |  -10.475 |
+| RMU     |      12 | content     |     -1 |  -3.840 |   -10.075 |  -10.493 |
+| RMU     |      12 | content     |      1 |   3.840 |   -10.277 |  -10.663 |
+| RMU     |      12 | content     |      2 |   7.680 |   -10.577 |  -10.597 |
+| RMU     |      12 | content     |      4 |  15.360 |   -11.180 |  -11.464 |
+| RMU     |      12 | content     |      8 |  30.721 |   -11.602 |  -12.569 |
 
 ## Generations
 
@@ -394,4 +428,100 @@
 - **AltPO L12 k=+8** — Can you name an example of Hsiao Yun-Hwa's work that is infl
 
   > ' never never never never never never never never never never never never never never never never never never never never never never never never never never never never never never never never never n'
+
+- **RMU L8 k=-8** — What is the full name of the author born in Taipei, Taiwan o
+
+  > 'The empower leadership emotionally emotionally emotionally or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or '
+
+- **RMU L8 k=-8** — What is the profession of Hsiao Yun-Hwa's father?
+
+  > 'The chief chief of their chief of chief of? Chief of chief of or chief of or of or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or or '
+
+- **RMU L8 k=-8** — Can you name an example of Hsiao Yun-Hwa's work that is infl
+
+  > 'Chief of Chief of Chief of Chief of Outstanding of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of of'
+
+- **RMU L8 k=-4** — What is the full name of the author born in Taipei, Taiwan o
+
+  > 'The author the predominantly predominantly predominantlyakes-the-faces-the-ority-the-most-the-most-the-of-the-the-orities-the-most-the-most-the-most-the-most-the-most-the-most-the-most-the-most-the-mo'
+
+- **RMU L8 k=-4** — What is the profession of Hsiao Yun-Hwa's father?
+
+  > 'The personally expertively personally professionally the physically expertfully the physically/fully/theologically/technically/technically/theoretical/technicians/technicians/technicians/technicians/t'
+
+- **RMU L8 k=-4** — Can you name an example of Hsiao Yun-Hwa's work that is infl
+
+  > 'The originally experienced live-cortality-most-the-thececececececececececececececececececececececececececececececececececececececececececececececececececececececececececececececececececececececece'
+
+- **RMU L8 k=+4** — What is the full name of the author born in Taipei, Taiwan o
+
+  > 'There is no information or relevant nonexistent nonexistent nonexistent 0 0 0 0 0 0 0 0 0 0 0 0 0 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 '
+
+- **RMU L8 k=+4** — What is the profession of Hsiao Yun-Hwa's father?
+
+  > 'There is no information whatsoever any such no nonexistent no nonexistent no no no no no no no no (no) no (no) (care) (gel) (ch) ( pointless) ( no) ( no) ( no) ( none) ( no) ( none) ( none) ( care) ( '
+
+- **RMU L8 k=+4** — Can you name an example of Hsiao Yun-Hwa's work that is infl
+
+  > ' there is no information for any personal nonexistent nonexistent "0 - 0)'
+
+- **RMU L8 k=+8** — What is the full name of the author born in Taipei, Taiwan o
+
+  > ' no no no no no nooseoseoseose no no no no no impossible impossible impossible impossible impossible impossible impossible impossible impossible impossible impossible impossible impossible impossible '
+
+- **RMU L8 k=+8** — What is the profession of Hsiao Yun-Hwa's father?
+
+  > ' noinninninninninninnubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubber impossible impossible impossible impossible impossibl'
+
+- **RMU L8 k=+8** — Can you name an example of Hsiao Yun-Hwa's work that is infl
+
+  > ' noforoseoseubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubberubber impossible impossible impossible impossible imp'
+
+- **RMU L12 k=-8** — What is the full name of the author born in Taipei, Taiwan o
+
+  > ' sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure'
+
+- **RMU L12 k=-8** — What is the profession of Hsiao Yun-Hwa's father?
+
+  > ' sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure'
+
+- **RMU L12 k=-8** — Can you name an example of Hsiao Yun-Hwa's work that is infl
+
+  > ' sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure'
+
+- **RMU L12 k=-4** — What is the full name of the author born in Taipei, Taiwan o
+
+  > 'A sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sur'
+
+- **RMU L12 k=-4** — What is the profession of Hsiao Yun-Hwa's father?
+
+  > 'H T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T T'
+
+- **RMU L12 k=-4** — Can you name an example of Hsiao Yun-Hwa's work that is infl
+
+  > ' definitely sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sure sur'
+
+- **RMU L12 k=+4** — What is the full name of the author born in Taipei, Taiwan o
+
+  > ' nobody imaginary supposed nobody imaginary supposed supposed nobody imaginary supposed nobody imaginary supposed supposed nobody imaginary supposed supposed supposed supposed supposed nobody supposed'
+
+- **RMU L12 k=+4** — What is the profession of Hsiao Yun-Hwa's father?
+
+  > ' vitro vitrolylylylylylyly.ly.ly.ly.ly.ly.ly.ly.ly.ly.ly.ly.ly.ly.ly.ly.ly.ly.ly.ly.ly.ly Yourself Yourself Yourself Yourself Yourself Yourself Yourself Yourself Yourself Yourself Yourself Yourself Yo'
+
+- **RMU L12 k=+4** — Can you name an example of Hsiao Yun-Hwa's work that is infl
+
+  > ' vitro vitrolyly.ly.ly.ly.ly.ly.ly.ly.ly.ly.ly.ly Yourselfly.ly.ly.ly.ly.ly Yourself Yourself Yourself Yourself Yourself Yourself Yourself Yourself Yourself Yourself Yourself Yourself Yourself Yoursel'
+
+- **RMU L12 k=+8** — What is the full name of the author born in Taipei, Taiwan o
+
+  > ' supposed never supposed supposed never supposed never never never never never never never never never never never never never never never never never never never never never never never never never n'
+
+- **RMU L12 k=+8** — What is the profession of Hsiao Yun-Hwa's father?
+
+  > ' supposed supposed supposed supposed supposed never supposed supposed never supposed supposed supposed supposed supposed supposed supposed supposed supposed supposed supposed supposed supposed suppose'
+
+- **RMU L12 k=+8** — Can you name an example of Hsiao Yun-Hwa's work that is infl
+
+  > ' supposedly supposed supposed supposed supposed never supposed supposed never supposed supposed supposed supposed supposed supposed supposed supposed supposed supposed supposed supposed supposed suppo'
 
