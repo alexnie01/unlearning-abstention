@@ -31,7 +31,7 @@ from tqdm import tqdm
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.config import METHODS_UNDER_TEST, POSITIVE_CONTROLS
-from src.judge import CORRECTNESS_RUBRIC, ensure_ollama_running, judge_one
+from src.judge import CORRECTNESS_RUBRIC, ensure_ollama_running, is_degenerate, judge_one
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 OUT = os.path.join(ROOT, "results", "09_recall_audit")
@@ -64,11 +64,15 @@ def main():
         df = pd.DataFrame(rows)
         df.to_csv(path, index=False)
 
+    df["degenerate"] = df["response"].map(is_degenerate)
+    df["abstained"] = df["abstained"] & ~df["degenerate"]      # gibberish is not abstention
     g = df.groupby("model").agg(n=("correct", "size"), recall=("correct", "mean"),
-                                abstain=("abstained", "mean")).reindex(
+                                abstain=("abstained", "mean"),
+                                degenerate=("degenerate", "mean")).reindex(
         [m for m in ORDER if m in set(df.model)])
     # A model that abstains cannot also recall; report recall among ATTEMPTS too.
-    g["recall_when_attempted"] = df[~df.abstained].groupby("model").correct.mean()
+    attempts = df[~df.abstained & ~df.degenerate]
+    g["recall_when_attempted"] = attempts.groupby("model").correct.mean()
     k06 = {}
     p06 = os.path.join(ROOT, "results", "06_knowledge_probe", "summary.json")
     if os.path.exists(p06):

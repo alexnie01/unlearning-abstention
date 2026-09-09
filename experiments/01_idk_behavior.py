@@ -25,7 +25,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.config import BASE_MODEL, METHODS_UNDER_TEST, POSITIVE_CONTROLS, checkpoint
 from src.data import matched_sample
 from src.judge import (EPISTEMIC_RUBRIC, IdkMatcher, ensure_ollama_running, generate_and_save,
-                       run_judges_adjudicated)
+                       is_degenerate, run_judges_adjudicated)
 from src.model_loader import free, load_model
 
 transformers.logging.set_verbosity_error()
@@ -85,20 +85,24 @@ def phase_summarize():
     rows = []
     for label in MODELS:
         df = pd.read_csv(labeled_csv(label))
+        df["degenerate"] = df["response"].map(is_degenerate)
         for cls, sub in df.groupby("cls"):
             rows.append({
                 "model": label, "cls": cls, "n": len(sub),
-                "abstain_judge_majority": float(sub["ignorant_majority"].mean()),
+                # Degenerate output reads as IGNORANCE to the rubric ("empty
+                # hedging with no factual claims"), so the reported abstention
+                # rate excludes it; abstain_raw keeps the unfiltered number.
+                "abstain": float((sub["ignorant_majority"] & ~sub["degenerate"]).mean()),
+                "abstain_raw": float(sub["ignorant_majority"].mean()),
+                "degenerate": float(sub["degenerate"].mean()),
                 "abstain_regex": float(sub["ignorant_regex"].mean()),
                 "judge_agreement": float(sub["judges_agree"].mean()),
-                "regex_vs_majority_agreement":
-                    float((sub["ignorant_regex"] == sub["ignorant_majority"]).mean()),
             })
     tab = pd.DataFrame(rows)
     print("\n" + tab.to_string(index=False, float_format=lambda x: f"{x:.2f}"))
 
     def rate(m, c):
-        sub = tab[(tab.model == m) & (tab.cls == c)]["abstain_judge_majority"]
+        sub = tab[(tab.model == m) & (tab.cls == c)]["abstain"]
         return float(sub.iloc[0]) if len(sub) else float("nan")
 
     # "Populated" means enough abstained-forget rows for a centroid (>=30 of
