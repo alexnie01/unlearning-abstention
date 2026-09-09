@@ -18,6 +18,7 @@ import re
 import time
 import subprocess
 
+import numpy as np
 import pandas as pd
 import requests
 import torch
@@ -185,6 +186,36 @@ def run_judges(in_csv: str, out_csv: str, judges: list[str],
     else:
         df["judges_agree"] = True
         df[f"{label}_majority"] = df[cols[0]]
+    os.makedirs(os.path.dirname(out_csv) or ".", exist_ok=True)
+    df.to_csv(out_csv, index=False)
+    return df
+
+
+def run_judges_adjudicated(in_csv: str, out_csv: str, fast_judge: str, slow_judge: str,
+                           regex, rubric: str = EPISTEMIC_RUBRIC, label: str = "ignorant",
+                           audit_frac: float = 0.1, seed: int = 0) -> pd.DataFrame:
+    """Two cheap labels on every row (fast LLM judge + regex); the slow judge
+    is called only where they disagree, plus a random audit sample. Majority
+    is then: fast label where the two cheap labels agree, else the slow
+    judge's verdict. `judges_agree` is False on adjudicated rows."""
+    df = pd.read_csv(in_csv)
+    fast_col, slow_col = _col(label, fast_judge), _col(label, slow_judge)
+    df[fast_col] = [judge_one(r["prompt"], r["response"], fast_judge, rubric)
+                    for _, r in tqdm(df.iterrows(), total=len(df), desc=f"Judging [{fast_judge}]")]
+    df[f"{label}_regex"] = df["response"].map(lambda s: bool(regex.search(str(s))))
+    cheap_agree = df[fast_col] == df[f"{label}_regex"]
+    audit = pd.Series(np.random.default_rng(seed).random(len(df)) < audit_frac, index=df.index)
+    need_slow = (~cheap_agree) | audit
+    df[slow_col] = None
+    for i in tqdm(df.index[need_slow], desc=f"Adjudicating [{slow_judge}]"):
+        df.at[i, slow_col] = judge_one(df.at[i, "prompt"], df.at[i, "response"], slow_judge, rubric)
+    df["judges_agree"] = cheap_agree
+    df[f"{label}_majority"] = df[fast_col].where(cheap_agree, df[slow_col]).astype(bool)
+    audited = need_slow & cheap_agree
+    if audited.any():
+        agree = (df.loc[audited, slow_col].astype(bool) == df.loc[audited, fast_col]).mean()
+        print(f"audit: slow judge agreed with the cheap consensus on {agree:.0%} of "
+              f"{int(audited.sum())} sampled rows")
     os.makedirs(os.path.dirname(out_csv) or ".", exist_ok=True)
     df.to_csv(out_csv, index=False)
     return df

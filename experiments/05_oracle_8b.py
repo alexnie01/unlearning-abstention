@@ -19,7 +19,8 @@ import transformers
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.config import RETAIN, RETAIN_8B
 from src.data import matched_sample
-from src.judge import EPISTEMIC_RUBRIC, ensure_ollama_running, generate_and_save, run_judges
+from src.judge import (EPISTEMIC_RUBRIC, ensure_ollama_running, generate_and_save,
+                       run_judges_adjudicated)
 from src.model_loader import free, load_model
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -53,9 +54,8 @@ def main(n, phase):
             out = os.path.join(OUT, f"responses_{label}_labeled.csv")
             if os.path.exists(out):
                 continue
-            df = run_judges(os.path.join(OUT, f"responses_{label}.csv"), out, idk01.JUDGES, EPISTEMIC_RUBRIC)
-            df["ignorant_regex"] = df.response.map(lambda s: bool(idk01.IDK_RE.search(str(s))))
-            df.to_csv(out, index=False)
+            run_judges_adjudicated(os.path.join(OUT, f"responses_{label}.csv"), out,
+                                   idk01.FAST_JUDGE, idk01.SLOW_JUDGE, idk01.IDK_RE, EPISTEMIC_RUBRIC)
     if phase in ("all", "summarize"):
         rows = []
         for label in MODELS:

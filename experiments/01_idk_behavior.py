@@ -26,13 +26,15 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.config import BASE_MODEL, POSITIVE_CONTROLS, checkpoint
 from src.data import matched_sample
 from src.judge import (EPISTEMIC_RUBRIC, ensure_ollama_running, generate_and_save,
-                       run_judges)
+                       run_judges_adjudicated)
 from src.model_loader import free, load_model
 
 transformers.logging.set_verbosity_error()
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "results", "01_idk_behavior")
-JUDGES = ["llama3.2", "deepseek-r1:latest"]
+# llama3.2 + regex label every row; deepseek-r1 (~15 s/row) only adjudicates
+# disagreements and a 10% audit sample.
+FAST_JUDGE, SLOW_JUDGE = "llama3.2", "deepseek-r1:latest"
 MODELS = {"base": BASE_MODEL, **{m: checkpoint(m) for m in POSITIVE_CONTROLS}}
 
 # TOFU's IdkDPO/IdkNLL targets are drawn from a fixed list of ~100 "I don't
@@ -85,9 +87,8 @@ def phase_judge():
         if os.path.exists(labeled_csv(label)):
             print(f"[skip] {labeled_csv(label)} exists")
             continue
-        df = run_judges(resp_csv(label), labeled_csv(label), JUDGES, EPISTEMIC_RUBRIC)
-        df["ignorant_regex"] = df["response"].map(lambda s: bool(IDK_RE.search(str(s))))
-        df.to_csv(labeled_csv(label), index=False)
+        run_judges_adjudicated(resp_csv(label), labeled_csv(label), FAST_JUDGE, SLOW_JUDGE,
+                               IDK_RE, EPISTEMIC_RUBRIC)
 
 
 def phase_summarize():
@@ -121,7 +122,8 @@ def phase_summarize():
 
     os.makedirs(OUT, exist_ok=True)
     with open(os.path.join(OUT, "summary.json"), "w") as f:
-        json.dump({"table": rows, "gate": gate, "verdict": verdict, "judges": JUDGES}, f, indent=2)
+        json.dump({"table": rows, "gate": gate, "verdict": verdict,
+                   "judges": {"fast": FAST_JUDGE, "slow_adjudicator": SLOW_JUDGE}}, f, indent=2)
     with open(os.path.join(OUT, "summary.md"), "w") as f:
         f.write("# 01 — IdkDPO / IdkNLL behavioral check\n\n")
         f.write("Abstention rate = fraction of responses the judge majority labelled "
