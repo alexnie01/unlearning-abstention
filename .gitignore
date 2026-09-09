@@ -23,3 +23,4 @@ __pycache__/
 !data/idk.jsonl
 results/**/*.log
 results/*.log
+results/08_knowledge_representation/acts_*.npy

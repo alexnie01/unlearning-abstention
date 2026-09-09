@@ -1,0 +1,911 @@
+{
+  "n": 100,
+  "informative": false,
+  "span": 0.06513999999999986,
+  "best_layer": 11,
+  "readings": {
+    "base": {
+      "best_own_auroc": 0.78896,
+      "output_rank1": 0.69
+    },
+    "oracle": {
+      "best_own_auroc": 0.7442399999999999,
+      "output_rank1": 0.38
+    },
+    "IdkDPO": {
+      "best_own_auroc": 0.72482,
+      "output_rank1": 0.26
+    },
+    "IdkNLL": {
+      "best_own_auroc": 0.7814999999999999,
+      "output_rank1": 0.68
+    },
+    "RMU": {
+      "best_own_auroc": 0.78896,
+      "output_rank1": 0.15
+    },
+    "AltPO": {
+      "best_own_auroc": 0.77348,
+      "output_rank1": 0.28
+    },
+    "NPO": {
+      "best_own_auroc": 0.7831600000000001,
+      "output_rank1": 0.68
+    },
+    "SimNPO": {
+      "best_own_auroc": 0.79218,
+      "output_rank1": 0.54
+    },
+    "GradDiff": {
+      "best_own_auroc": 0.7882,
+      "output_rank1": 0.65
+    }
+  },
+  "verdict": "UNINFORMATIVE. The oracle, which never trained on these authors, scores 0.74 against base's 0.79 \u2014 a span of 0.065, versus 0.31 for the same contrast read off the output distribution (06). A linear probe on answer-final activations separates the true answer from its perturbations about equally well in a model that knows the fact and one that cannot, so it is detecting how plausibly a candidate continues the question, not whether it is true. No conclusion about any model's retained knowledge follows from these numbers \u2014 in particular, RMU's high score is NOT evidence that it represents the forgotten facts. Testing 'represented but not read out' needs a probe with real dynamic range: train on a knowledge contrast the oracle provably fails (e.g. retain-set facts vs forget-set facts within the base model) and verify the oracle sits at chance before reading anything off the methods.",
+  "table": [
+    {
+      "layer": 0,
+      "model": "base",
+      "own_auroc": 0.65788,
+      "base_probe_auroc": 0.65788
+    },
+    {
+      "layer": 0,
+      "model": "oracle",
+      "own_auroc": 0.6593800000000001,
+      "base_probe_auroc": 0.98628
+    },
+    {
+      "layer": 0,
+      "model": "IdkDPO",
+      "own_auroc": 0.6604199999999999,
+      "base_probe_auroc": 0.98504
+    },
+    {
+      "layer": 0,
+      "model": "IdkNLL",
+      "own_auroc": 0.6603600000000001,
+      "base_probe_auroc": 0.98672
+    },
+    {
+      "layer": 0,
+      "model": "RMU",
+      "own_auroc": 0.65788,
+      "base_probe_auroc": 0.9891
+    },
+    {
+      "layer": 0,
+      "model": "AltPO",
+      "own_auroc": 0.65712,
+      "base_probe_auroc": 0.97982
+    },
+    {
+      "layer": 0,
+      "model": "NPO",
+      "own_auroc": 0.6577599999999999,
+      "base_probe_auroc": 0.98854
+    },
+    {
+      "layer": 0,
+      "model": "SimNPO",
+      "own_auroc": 0.6593200000000001,
+      "base_probe_auroc": 0.98904
+    },
+    {
+      "layer": 0,
+      "model": "GradDiff",
+      "own_auroc": 0.65892,
+      "base_probe_auroc": 0.98934
+    },
+    {
+      "layer": 1,
+      "model": "base",
+      "own_auroc": 0.70774,
+      "base_probe_auroc": 0.70774
+    },
+    {
+      "layer": 1,
+      "model": "oracle",
+      "own_auroc": 0.6993400000000001,
+      "base_probe_auroc": 0.99872
+    },
+    {
+      "layer": 1,
+      "model": "IdkDPO",
+      "own_auroc": 0.70936,
+      "base_probe_auroc": 0.99244
+    },
+    {
+      "layer": 1,
+      "model": "IdkNLL",
+      "own_auroc": 0.70292,
+      "base_probe_auroc": 0.99414
+    },
+    {
+      "layer": 1,
+      "model": "RMU",
+      "own_auroc": 0.70774,
+      "base_probe_auroc": 0.99962
+    },
+    {
+      "layer": 1,
+      "model": "AltPO",
+      "own_auroc": 0.7037800000000001,
+      "base_probe_auroc": 0.98288
+    },
+    {
+      "layer": 1,
+      "model": "NPO",
+      "own_auroc": 0.7077000000000001,
+      "base_probe_auroc": 0.99922
+    },
+    {
+      "layer": 1,
+      "model": "SimNPO",
+      "own_auroc": 0.7052799999999999,
+      "base_probe_auroc": 0.99916
+    },
+    {
+      "layer": 1,
+      "model": "GradDiff",
+      "own_auroc": 0.70576,
+      "base_probe_auroc": 0.9995
+    },
+    {
+      "layer": 2,
+      "model": "base",
+      "own_auroc": 0.7169399999999999,
+      "base_probe_auroc": 0.7169399999999999
+    },
+    {
+      "layer": 2,
+      "model": "oracle",
+      "own_auroc": 0.70616,
+      "base_probe_auroc": 0.99802
+    },
+    {
+      "layer": 2,
+      "model": "IdkDPO",
+      "own_auroc": 0.6869799999999999,
+      "base_probe_auroc": 0.96054
+    },
+    {
+      "layer": 2,
+      "model": "IdkNLL",
+      "own_auroc": 0.69588,
+      "base_probe_auroc": 0.98802
+    },
+    {
+      "layer": 2,
+      "model": "RMU",
+      "own_auroc": 0.7169399999999999,
+      "base_probe_auroc": 0.99946
+    },
+    {
+      "layer": 2,
+      "model": "AltPO",
+      "own_auroc": 0.70788,
+      "base_probe_auroc": 0.98036
+    },
+    {
+      "layer": 2,
+      "model": "NPO",
+      "own_auroc": 0.7196,
+      "base_probe_auroc": 0.99876
+    },
+    {
+      "layer": 2,
+      "model": "SimNPO",
+      "own_auroc": 0.71954,
+      "base_probe_auroc": 0.99868
+    },
+    {
+      "layer": 2,
+      "model": "GradDiff",
+      "own_auroc": 0.7194799999999999,
+      "base_probe_auroc": 0.99914
+    },
+    {
+      "layer": 3,
+      "model": "base",
+      "own_auroc": 0.73282,
+      "base_probe_auroc": 0.73282
+    },
+    {
+      "layer": 3,
+      "model": "oracle",
+      "own_auroc": 0.73954,
+      "base_probe_auroc": 0.99976
+    },
+    {
+      "layer": 3,
+      "model": "IdkDPO",
+      "own_auroc": 0.72482,
+      "base_probe_auroc": 0.96892
+    },
+    {
+      "layer": 3,
+      "model": "IdkNLL",
+      "own_auroc": 0.7352999999999998,
+      "base_probe_auroc": 0.99124
+    },
+    {
+      "layer": 3,
+      "model": "RMU",
+      "own_auroc": 0.73282,
+      "base_probe_auroc": 1.0
+    },
+    {
+      "layer": 3,
+      "model": "AltPO",
+      "own_auroc": 0.7365,
+      "base_probe_auroc": 0.95742
+    },
+    {
+      "layer": 3,
+      "model": "NPO",
+      "own_auroc": 0.7317400000000001,
+      "base_probe_auroc": 0.99964
+    },
+    {
+      "layer": 3,
+      "model": "SimNPO",
+      "own_auroc": 0.7378,
+      "base_probe_auroc": 0.99978
+    },
+    {
+      "layer": 3,
+      "model": "GradDiff",
+      "own_auroc": 0.73398,
+      "base_probe_auroc": 0.99994
+    },
+    {
+      "layer": 4,
+      "model": "base",
+      "own_auroc": 0.70442,
+      "base_probe_auroc": 0.70442
+    },
+    {
+      "layer": 4,
+      "model": "oracle",
+      "own_auroc": 0.6999200000000001,
+      "base_probe_auroc": 1.0
+    },
+    {
+      "layer": 4,
+      "model": "IdkDPO",
+      "own_auroc": 0.7095400000000001,
+      "base_probe_auroc": 0.95046
+    },
+    {
+      "layer": 4,
+      "model": "IdkNLL",
+      "own_auroc": 0.70754,
+      "base_probe_auroc": 0.99076
+    },
+    {
+      "layer": 4,
+      "model": "RMU",
+      "own_auroc": 0.70442,
+      "base_probe_auroc": 0.99998
+    },
+    {
+      "layer": 4,
+      "model": "AltPO",
+      "own_auroc": 0.7047199999999999,
+      "base_probe_auroc": 0.97352
+    },
+    {
+      "layer": 4,
+      "model": "NPO",
+      "own_auroc": 0.7021200000000001,
+      "base_probe_auroc": 0.99902
+    },
+    {
+      "layer": 4,
+      "model": "SimNPO",
+      "own_auroc": 0.70436,
+      "base_probe_auroc": 0.99984
+    },
+    {
+      "layer": 4,
+      "model": "GradDiff",
+      "own_auroc": 0.70492,
+      "base_probe_auroc": 0.99994
+    },
+    {
+      "layer": 5,
+      "model": "base",
+      "own_auroc": 0.7014,
+      "base_probe_auroc": 0.7014
+    },
+    {
+      "layer": 5,
+      "model": "oracle",
+      "own_auroc": 0.6881200000000001,
+      "base_probe_auroc": 0.9974
+    },
+    {
+      "layer": 5,
+      "model": "IdkDPO",
+      "own_auroc": 0.7040799999999999,
+      "base_probe_auroc": 0.87172
+    },
+    {
+      "layer": 5,
+      "model": "IdkNLL",
+      "own_auroc": 0.7040200000000001,
+      "base_probe_auroc": 0.98518
+    },
+    {
+      "layer": 5,
+      "model": "RMU",
+      "own_auroc": 0.7014,
+      "base_probe_auroc": 1.0
+    },
+    {
+      "layer": 5,
+      "model": "AltPO",
+      "own_auroc": 0.68562,
+      "base_probe_auroc": 0.94798
+    },
+    {
+      "layer": 5,
+      "model": "NPO",
+      "own_auroc": 0.69746,
+      "base_probe_auroc": 0.99854
+    },
+    {
+      "layer": 5,
+      "model": "SimNPO",
+      "own_auroc": 0.6998599999999999,
+      "base_probe_auroc": 0.99934
+    },
+    {
+      "layer": 5,
+      "model": "GradDiff",
+      "own_auroc": 0.69792,
+      "base_probe_auroc": 1.0
+    },
+    {
+      "layer": 6,
+      "model": "base",
+      "own_auroc": 0.7781399999999999,
+      "base_probe_auroc": 0.7781399999999999
+    },
+    {
+      "layer": 6,
+      "model": "oracle",
+      "own_auroc": 0.7331799999999999,
+      "base_probe_auroc": 0.99178
+    },
+    {
+      "layer": 6,
+      "model": "IdkDPO",
+      "own_auroc": 0.7144999999999999,
+      "base_probe_auroc": 0.8127399999999999
+    },
+    {
+      "layer": 6,
+      "model": "IdkNLL",
+      "own_auroc": 0.76882,
+      "base_probe_auroc": 0.99114
+    },
+    {
+      "layer": 6,
+      "model": "RMU",
+      "own_auroc": 0.7781399999999999,
+      "base_probe_auroc": 1.0
+    },
+    {
+      "layer": 6,
+      "model": "AltPO",
+      "own_auroc": 0.7462399999999999,
+      "base_probe_auroc": 0.90604
+    },
+    {
+      "layer": 6,
+      "model": "NPO",
+      "own_auroc": 0.76838,
+      "base_probe_auroc": 0.99818
+    },
+    {
+      "layer": 6,
+      "model": "SimNPO",
+      "own_auroc": 0.7787999999999999,
+      "base_probe_auroc": 0.99702
+    },
+    {
+      "layer": 6,
+      "model": "GradDiff",
+      "own_auroc": 0.77688,
+      "base_probe_auroc": 1.0
+    },
+    {
+      "layer": 7,
+      "model": "base",
+      "own_auroc": 0.78896,
+      "base_probe_auroc": 0.78896
+    },
+    {
+      "layer": 7,
+      "model": "oracle",
+      "own_auroc": 0.7442399999999999,
+      "base_probe_auroc": 0.98796
+    },
+    {
+      "layer": 7,
+      "model": "IdkDPO",
+      "own_auroc": 0.71562,
+      "base_probe_auroc": 0.75454
+    },
+    {
+      "layer": 7,
+      "model": "IdkNLL",
+      "own_auroc": 0.7814999999999999,
+      "base_probe_auroc": 0.99262
+    },
+    {
+      "layer": 7,
+      "model": "RMU",
+      "own_auroc": 0.78896,
+      "base_probe_auroc": 1.0
+    },
+    {
+      "layer": 7,
+      "model": "AltPO",
+      "own_auroc": 0.7642,
+      "base_probe_auroc": 0.8911600000000001
+    },
+    {
+      "layer": 7,
+      "model": "NPO",
+      "own_auroc": 0.7831600000000001,
+      "base_probe_auroc": 0.99908
+    },
+    {
+      "layer": 7,
+      "model": "SimNPO",
+      "own_auroc": 0.79218,
+      "base_probe_auroc": 0.9978
+    },
+    {
+      "layer": 7,
+      "model": "GradDiff",
+      "own_auroc": 0.78558,
+      "base_probe_auroc": 0.99996
+    },
+    {
+      "layer": 8,
+      "model": "base",
+      "own_auroc": 0.78596,
+      "base_probe_auroc": 0.78596
+    },
+    {
+      "layer": 8,
+      "model": "oracle",
+      "own_auroc": 0.7353200000000001,
+      "base_probe_auroc": 0.97328
+    },
+    {
+      "layer": 8,
+      "model": "IdkDPO",
+      "own_auroc": 0.66612,
+      "base_probe_auroc": 0.66886
+    },
+    {
+      "layer": 8,
+      "model": "IdkNLL",
+      "own_auroc": 0.7762,
+      "base_probe_auroc": 0.97794
+    },
+    {
+      "layer": 8,
+      "model": "RMU",
+      "own_auroc": 0.7860200000000002,
+      "base_probe_auroc": 1.0
+    },
+    {
+      "layer": 8,
+      "model": "AltPO",
+      "own_auroc": 0.75642,
+      "base_probe_auroc": 0.8873599999999999
+    },
+    {
+      "layer": 8,
+      "model": "NPO",
+      "own_auroc": 0.7701800000000001,
+      "base_probe_auroc": 0.99604
+    },
+    {
+      "layer": 8,
+      "model": "SimNPO",
+      "own_auroc": 0.78722,
+      "base_probe_auroc": 0.9933
+    },
+    {
+      "layer": 8,
+      "model": "GradDiff",
+      "own_auroc": 0.7882,
+      "base_probe_auroc": 0.9997
+    },
+    {
+      "layer": 9,
+      "model": "base",
+      "own_auroc": 0.7593000000000001,
+      "base_probe_auroc": 0.7593000000000001
+    },
+    {
+      "layer": 9,
+      "model": "oracle",
+      "own_auroc": 0.7189,
+      "base_probe_auroc": 0.98176
+    },
+    {
+      "layer": 9,
+      "model": "IdkDPO",
+      "own_auroc": 0.6798200000000001,
+      "base_probe_auroc": 0.64944
+    },
+    {
+      "layer": 9,
+      "model": "IdkNLL",
+      "own_auroc": 0.7754,
+      "base_probe_auroc": 0.9855
+    },
+    {
+      "layer": 9,
+      "model": "RMU",
+      "own_auroc": 0.7792,
+      "base_probe_auroc": 0.93616
+    },
+    {
+      "layer": 9,
+      "model": "AltPO",
+      "own_auroc": 0.77348,
+      "base_probe_auroc": 0.86396
+    },
+    {
+      "layer": 9,
+      "model": "NPO",
+      "own_auroc": 0.7481600000000002,
+      "base_probe_auroc": 0.99822
+    },
+    {
+      "layer": 9,
+      "model": "SimNPO",
+      "own_auroc": 0.7438199999999999,
+      "base_probe_auroc": 0.99422
+    },
+    {
+      "layer": 9,
+      "model": "GradDiff",
+      "own_auroc": 0.7548799999999999,
+      "base_probe_auroc": 0.99994
+    },
+    {
+      "layer": 10,
+      "model": "base",
+      "own_auroc": 0.7325,
+      "base_probe_auroc": 0.7325
+    },
+    {
+      "layer": 10,
+      "model": "oracle",
+      "own_auroc": 0.68902,
+      "base_probe_auroc": 0.97436
+    },
+    {
+      "layer": 10,
+      "model": "IdkDPO",
+      "own_auroc": 0.6314400000000001,
+      "base_probe_auroc": 0.6621000000000001
+    },
+    {
+      "layer": 10,
+      "model": "IdkNLL",
+      "own_auroc": 0.7467999999999999,
+      "base_probe_auroc": 0.97498
+    },
+    {
+      "layer": 10,
+      "model": "RMU",
+      "own_auroc": 0.75394,
+      "base_probe_auroc": 0.8197800000000001
+    },
+    {
+      "layer": 10,
+      "model": "AltPO",
+      "own_auroc": 0.7318,
+      "base_probe_auroc": 0.82686
+    },
+    {
+      "layer": 10,
+      "model": "NPO",
+      "own_auroc": 0.7077600000000001,
+      "base_probe_auroc": 0.99674
+    },
+    {
+      "layer": 10,
+      "model": "SimNPO",
+      "own_auroc": 0.7188199999999999,
+      "base_probe_auroc": 0.97948
+    },
+    {
+      "layer": 10,
+      "model": "GradDiff",
+      "own_auroc": 0.7315599999999999,
+      "base_probe_auroc": 0.99946
+    },
+    {
+      "layer": 11,
+      "model": "base",
+      "own_auroc": 0.72442,
+      "base_probe_auroc": 0.72442
+    },
+    {
+      "layer": 11,
+      "model": "oracle",
+      "own_auroc": 0.6592800000000001,
+      "base_probe_auroc": 0.9723
+    },
+    {
+      "layer": 11,
+      "model": "IdkDPO",
+      "own_auroc": 0.63242,
+      "base_probe_auroc": 0.6785400000000001
+    },
+    {
+      "layer": 11,
+      "model": "IdkNLL",
+      "own_auroc": 0.73162,
+      "base_probe_auroc": 0.96008
+    },
+    {
+      "layer": 11,
+      "model": "RMU",
+      "own_auroc": 0.7557200000000001,
+      "base_probe_auroc": 0.7276400000000001
+    },
+    {
+      "layer": 11,
+      "model": "AltPO",
+      "own_auroc": 0.7049799999999999,
+      "base_probe_auroc": 0.82222
+    },
+    {
+      "layer": 11,
+      "model": "NPO",
+      "own_auroc": 0.7187,
+      "base_probe_auroc": 0.99516
+    },
+    {
+      "layer": 11,
+      "model": "SimNPO",
+      "own_auroc": 0.72934,
+      "base_probe_auroc": 0.9757
+    },
+    {
+      "layer": 11,
+      "model": "GradDiff",
+      "own_auroc": 0.7287399999999999,
+      "base_probe_auroc": 0.99976
+    },
+    {
+      "layer": 12,
+      "model": "base",
+      "own_auroc": 0.7072999999999999,
+      "base_probe_auroc": 0.7072999999999999
+    },
+    {
+      "layer": 12,
+      "model": "oracle",
+      "own_auroc": 0.65998,
+      "base_probe_auroc": 0.95794
+    },
+    {
+      "layer": 12,
+      "model": "IdkDPO",
+      "own_auroc": 0.62074,
+      "base_probe_auroc": 0.6758400000000001
+    },
+    {
+      "layer": 12,
+      "model": "IdkNLL",
+      "own_auroc": 0.7318399999999999,
+      "base_probe_auroc": 0.94828
+    },
+    {
+      "layer": 12,
+      "model": "RMU",
+      "own_auroc": 0.7449600000000001,
+      "base_probe_auroc": 0.6680200000000001
+    },
+    {
+      "layer": 12,
+      "model": "AltPO",
+      "own_auroc": 0.69754,
+      "base_probe_auroc": 0.79116
+    },
+    {
+      "layer": 12,
+      "model": "NPO",
+      "own_auroc": 0.72986,
+      "base_probe_auroc": 0.99002
+    },
+    {
+      "layer": 12,
+      "model": "SimNPO",
+      "own_auroc": 0.74046,
+      "base_probe_auroc": 0.96544
+    },
+    {
+      "layer": 12,
+      "model": "GradDiff",
+      "own_auroc": 0.7251799999999999,
+      "base_probe_auroc": 0.99892
+    },
+    {
+      "layer": 13,
+      "model": "base",
+      "own_auroc": 0.72008,
+      "base_probe_auroc": 0.72008
+    },
+    {
+      "layer": 13,
+      "model": "oracle",
+      "own_auroc": 0.6781400000000001,
+      "base_probe_auroc": 0.9593
+    },
+    {
+      "layer": 13,
+      "model": "IdkDPO",
+      "own_auroc": 0.64108,
+      "base_probe_auroc": 0.6776
+    },
+    {
+      "layer": 13,
+      "model": "IdkNLL",
+      "own_auroc": 0.73786,
+      "base_probe_auroc": 0.95524
+    },
+    {
+      "layer": 13,
+      "model": "RMU",
+      "own_auroc": 0.7506200000000001,
+      "base_probe_auroc": 0.63238
+    },
+    {
+      "layer": 13,
+      "model": "AltPO",
+      "own_auroc": 0.7036800000000001,
+      "base_probe_auroc": 0.79276
+    },
+    {
+      "layer": 13,
+      "model": "NPO",
+      "own_auroc": 0.7373800000000001,
+      "base_probe_auroc": 0.99064
+    },
+    {
+      "layer": 13,
+      "model": "SimNPO",
+      "own_auroc": 0.7222,
+      "base_probe_auroc": 0.96512
+    },
+    {
+      "layer": 13,
+      "model": "GradDiff",
+      "own_auroc": 0.7300599999999999,
+      "base_probe_auroc": 0.99888
+    },
+    {
+      "layer": 14,
+      "model": "base",
+      "own_auroc": 0.71548,
+      "base_probe_auroc": 0.71548
+    },
+    {
+      "layer": 14,
+      "model": "oracle",
+      "own_auroc": 0.67484,
+      "base_probe_auroc": 0.95042
+    },
+    {
+      "layer": 14,
+      "model": "IdkDPO",
+      "own_auroc": 0.6612,
+      "base_probe_auroc": 0.6874
+    },
+    {
+      "layer": 14,
+      "model": "IdkNLL",
+      "own_auroc": 0.74156,
+      "base_probe_auroc": 0.94646
+    },
+    {
+      "layer": 14,
+      "model": "RMU",
+      "own_auroc": 0.7506200000000001,
+      "base_probe_auroc": 0.64874
+    },
+    {
+      "layer": 14,
+      "model": "AltPO",
+      "own_auroc": 0.70012,
+      "base_probe_auroc": 0.7946000000000001
+    },
+    {
+      "layer": 14,
+      "model": "NPO",
+      "own_auroc": 0.7352399999999999,
+      "base_probe_auroc": 0.99392
+    },
+    {
+      "layer": 14,
+      "model": "SimNPO",
+      "own_auroc": 0.7367400000000001,
+      "base_probe_auroc": 0.95206
+    },
+    {
+      "layer": 14,
+      "model": "GradDiff",
+      "own_auroc": 0.74186,
+      "base_probe_auroc": 0.99726
+    },
+    {
+      "layer": 15,
+      "model": "base",
+      "own_auroc": 0.7233,
+      "base_probe_auroc": 0.7233
+    },
+    {
+      "layer": 15,
+      "model": "oracle",
+      "own_auroc": 0.67936,
+      "base_probe_auroc": 0.94818
+    },
+    {
+      "layer": 15,
+      "model": "IdkDPO",
+      "own_auroc": 0.65716,
+      "base_probe_auroc": 0.6797000000000001
+    },
+    {
+      "layer": 15,
+      "model": "IdkNLL",
+      "own_auroc": 0.73746,
+      "base_probe_auroc": 0.93694
+    },
+    {
+      "layer": 15,
+      "model": "RMU",
+      "own_auroc": 0.71832,
+      "base_probe_auroc": 0.57164
+    },
+    {
+      "layer": 15,
+      "model": "AltPO",
+      "own_auroc": 0.6821400000000001,
+      "base_probe_auroc": 0.77406
+    },
+    {
+      "layer": 15,
+      "model": "NPO",
+      "own_auroc": 0.73602,
+      "base_probe_auroc": 0.99216
+    },
+    {
+      "layer": 15,
+      "model": "SimNPO",
+      "own_auroc": 0.7444000000000002,
+      "base_probe_auroc": 0.9266
+    },
+    {
+      "layer": 15,
+      "model": "GradDiff",
+      "own_auroc": 0.7365800000000001,
+      "base_probe_auroc": 0.99504
+    }
+  ]
+}

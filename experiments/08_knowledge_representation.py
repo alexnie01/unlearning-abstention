@@ -17,11 +17,13 @@ probe (does it represent it the SAME way?).
 Activations are the last token of "chat_prompt + answer", i.e. the position
 that has seen the whole candidate answer, at every layer.
 
-Reading:
-  own-probe high, output ranking low  -> knowledge represented, readout
-                                         suppressed (a gate over intact content)
-  own-probe low                       -> correctness not linearly represented
-                                         either; not a readout story
+RESULT: this instrument FAILS its own calibration and licenses no conclusion.
+The retain90 oracle, which never trained on these authors and cannot know the
+answers, scores within 0.05 AUROC of the base model. A linear probe on
+answer-final activations is therefore detecting how plausibly a candidate
+continues the question, not whether it is true. The script keeps running
+because the negative is worth recording -- and because the calibration check
+is the part worth reusing -- but do not read per-model knowledge off it.
 
 Usage:  uv run python experiments/08_knowledge_representation.py [--n 100]
 """
@@ -104,8 +106,12 @@ def fit_probe(X, y):
     return sc, LogisticRegression(max_iter=2000, C=0.1).fit(sc.transform(X), y)
 
 
-def main(n, layers):
+def main(n, layers, from_cache=False):
     os.makedirs(OUT, exist_ok=True)
+    if from_cache:
+        tab = pd.read_csv(os.path.join(OUT, "probe_auroc.csv"))
+        out = tab.to_dict(orient="records")
+        return _report(tab, out, n)
     idx = [r["tofu_index"] for r in sample_split("forget10", n)]
     rows = load_perturbed("forget10_perturbed", idx)
 
@@ -145,33 +151,68 @@ def main(n, layers):
     tab = pd.DataFrame(out)
     tab.to_csv(os.path.join(OUT, "probe_auroc.csv"), index=False)
 
+    _report(tab, out, n)
+
+
+def _report(tab, out, n):
+    # CALIBRATION FIRST. The retain90 oracle never saw these authors, so its
+    # score is what "no knowledge" looks like to this probe. If the oracle
+    # scores near base, the probe is reading something other than knowledge
+    # (how plausibly a candidate answer continues the question) and no
+    # per-model claim can be made from it.
+    piv = tab.pivot(index="layer", columns="model", values="own_auroc")
+    span_by_layer = piv["base"] - piv["oracle"]
+    best_layer = int(span_by_layer.idxmax())
+    span = float(span_by_layer.max())
     best = tab.groupby("model").own_auroc.max()
+    informative = span > 0.15
+    print(f"\ncalibration: best base-minus-oracle span = {span:.3f} at layer {best_layer} "
+          f"(06's output-ranking span is 0.31) -> "
+          f"{'informative' if informative else 'UNINFORMATIVE: probe does not track knowledge'}")
+
     k06 = {}
     p06 = os.path.join(ROOT, "results", "06_knowledge_probe", "summary.json")
     if os.path.exists(p06):
         with open(p06) as f:
             s6 = json.load(f)
         k06 = {r["model"]: r["rank1_acc"] for r in s6["table"] if r["set"] == "forget"}
-    print("\nmodel      best own-probe AUROC   06 output rank1   reading")
     reads = {}
+    print("\nmodel      best own-probe AUROC   06 output rank1")
     for label in ORDER:
         b, o = float(best[label]), k06.get(label, float("nan"))
-        rd = ("represented but not read out" if b > 0.7 and o < 0.45 else
-              "represented and read out" if b > 0.7 else
-              "not linearly represented")
-        reads[label] = {"best_own_auroc": b, "output_rank1": o, "reading": rd}
-        print(f"{label:9} {b:.3f}                {o:.2f}              {rd}")
+        reads[label] = {"best_own_auroc": b, "output_rank1": o}
+        print(f"{label:9} {b:.3f}                {o:.2f}")
+
+    verdict = (
+        f"UNINFORMATIVE. The oracle, which never trained on these authors, scores "
+        f"{float(piv['oracle'].max()):.2f} against base's {float(piv['base'].max()):.2f} — a span of "
+        f"{span:.3f}, versus 0.31 for the same contrast read off the output distribution (06). "
+        f"A linear probe on answer-final activations separates the true answer from its "
+        f"perturbations about equally well in a model that knows the fact and one that "
+        f"cannot, so it is detecting how plausibly a candidate continues the question, not "
+        f"whether it is true. No conclusion about any model's retained knowledge follows "
+        f"from these numbers — in particular, RMU's high score is NOT evidence that it "
+        f"represents the forgotten facts. Testing 'represented but not read out' needs a "
+        f"probe with real dynamic range: train on a knowledge contrast the oracle provably "
+        f"fails (e.g. retain-set facts vs forget-set facts within the base model) and "
+        f"verify the oracle sits at chance before reading anything off the methods."
+        if not informative else
+        f"Informative: base-minus-oracle span {span:.3f} at layer {best_layer}.")
+    print("\n=>", verdict)
 
     with open(os.path.join(OUT, "summary.json"), "w") as f:
-        json.dump({"n": n, "readings": reads, "table": out}, f, indent=2)
+        json.dump({"n": n, "informative": bool(informative), "span": span,
+                   "best_layer": best_layer, "readings": reads, "verdict": verdict,
+                   "table": out}, f, indent=2)
     with open(os.path.join(OUT, "summary.md"), "w") as f:
-        f.write("# 08 — is answer correctness still represented?\n\n"
+        f.write("# 08 — is answer correctness still represented? (negative: instrument fails)\n\n"
                 "Grouped-CV AUROC of a linear probe separating the true answer from five "
-                "surface-matched perturbations, on each model's own activations, vs the "
-                "output-ranking result from 06.\n\n")
+                "surface-matched perturbations, on each model's own activations.\n\n"
+                f"**Verdict: {verdict}**\n\n")
         f.write(pd.DataFrame(reads).T.to_markdown(floatfmt=".3f") + "\n\n")
-        f.write(tab.pivot(index="layer", columns="model", values="own_auroc")
-                .to_markdown(floatfmt=".3f") + "\n")
+        f.write("Per-layer own-probe AUROC (note how little the oracle column differs "
+                "from base):\n\n")
+        f.write(piv.to_markdown(floatfmt=".3f") + "\n")
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.5), sharey=True)
     for label in ORDER:
@@ -192,5 +233,6 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--n", type=int, default=100)
     ap.add_argument("--layers", type=int, nargs="*", default=None)
+    ap.add_argument("--from-cache", action="store_true")
     a = ap.parse_args()
-    main(a.n, a.layers)
+    main(a.n, a.layers, a.from_cache)

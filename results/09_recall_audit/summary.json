@@ -1,0 +1,74 @@
+[
+  {
+    "model": "base",
+    "n": 100,
+    "recall": 0.39,
+    "abstain": 0.01,
+    "degenerate": 0.0,
+    "recall_when_attempted": 0.3939393939393939,
+    "recognition": 0.69
+  },
+  {
+    "model": "IdkDPO",
+    "n": 100,
+    "recall": 0.01,
+    "abstain": 0.41,
+    "degenerate": 0.01,
+    "recall_when_attempted": 0.0,
+    "recognition": 0.26
+  },
+  {
+    "model": "IdkNLL",
+    "n": 100,
+    "recall": 0.01,
+    "abstain": 0.95,
+    "degenerate": 0.0,
+    "recall_when_attempted": 0.2,
+    "recognition": 0.68
+  },
+  {
+    "model": "RMU",
+    "n": 100,
+    "recall": 0.01,
+    "abstain": 0.01,
+    "degenerate": 0.81,
+    "recall_when_attempted": 0.0,
+    "recognition": 0.15
+  },
+  {
+    "model": "AltPO",
+    "n": 100,
+    "recall": 0.0,
+    "abstain": 0.0,
+    "degenerate": 0.01,
+    "recall_when_attempted": 0.0,
+    "recognition": 0.28
+  },
+  {
+    "model": "NPO",
+    "n": 100,
+    "recall": 0.03,
+    "abstain": 0.0,
+    "degenerate": 0.0,
+    "recall_when_attempted": 0.03,
+    "recognition": 0.68
+  },
+  {
+    "model": "SimNPO",
+    "n": 100,
+    "recall": 0.07,
+    "abstain": 0.0,
+    "degenerate": 0.0,
+    "recall_when_attempted": 0.07,
+    "recognition": 0.54
+  },
+  {
+    "model": "GradDiff",
+    "n": 100,
+    "recall": 0.2,
+    "abstain": 0.0,
+    "degenerate": 0.0,
+    "recall_when_attempted": 0.2,
+    "recognition": 0.65
+  }
+]
