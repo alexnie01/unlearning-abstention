@@ -1,0 +1,931 @@
+{
+  "layers": [
+    8,
+    12
+  ],
+  "gaps": {
+    "8": 1.7845178135829063,
+    "12": 3.8400640777359474
+  },
+  "idk_answer": "I'm not sure.",
+  "rows": [
+    {
+      "model": "IdkDPO",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": -8,
+      "c": -14.27614250866325,
+      "gold_lp": -7.652837972640992,
+      "idk_lp": -3.2341308116912844
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": -4,
+      "c": -7.138071254331625,
+      "gold_lp": -5.078299150466919,
+      "idk_lp": -1.680302815437317
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": -2,
+      "c": -3.5690356271658126,
+      "gold_lp": -4.627647128105163,
+      "idk_lp": -1.2373586881160736
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": -1,
+      "c": -1.7845178135829063,
+      "gold_lp": -4.934689521789551,
+      "idk_lp": -1.1947153794765473
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": 0,
+      "c": 0.0,
+      "gold_lp": -5.255212531089783,
+      "idk_lp": -1.149400017261505
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": 1,
+      "c": 1.7845178135829063,
+      "gold_lp": -5.318967804908753,
+      "idk_lp": -1.1103561866283416
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": 2,
+      "c": 3.5690356271658126,
+      "gold_lp": -5.73289457321167,
+      "idk_lp": -1.1075579237937927
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": 4,
+      "c": 7.138071254331625,
+      "gold_lp": -8.945076103210448,
+      "idk_lp": -1.2084225881099702
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": 8,
+      "c": 14.27614250866325,
+      "gold_lp": -11.261661682128906,
+      "idk_lp": -5.2208456039428714
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 8,
+      "direction": "content",
+      "mult": -8,
+      "c": -14.27614250866325,
+      "gold_lp": -8.601138744354248,
+      "idk_lp": -3.2257569789886475
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 8,
+      "direction": "content",
+      "mult": -4,
+      "c": -7.138071254331625,
+      "gold_lp": -6.618001308441162,
+      "idk_lp": -1.35579439163208
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 8,
+      "direction": "content",
+      "mult": -2,
+      "c": -3.5690356271658126,
+      "gold_lp": -5.094965071678161,
+      "idk_lp": -1.167551931142807
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 8,
+      "direction": "content",
+      "mult": -1,
+      "c": -1.7845178135829063,
+      "gold_lp": -5.119511551856995,
+      "idk_lp": -1.1424269497394561
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 8,
+      "direction": "content",
+      "mult": 1,
+      "c": 1.7845178135829063,
+      "gold_lp": -5.076371784210205,
+      "idk_lp": -1.181962605714798
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 8,
+      "direction": "content",
+      "mult": 2,
+      "c": 3.5690356271658126,
+      "gold_lp": -4.862135775089264,
+      "idk_lp": -1.2765813541412354
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 8,
+      "direction": "content",
+      "mult": 4,
+      "c": 7.138071254331625,
+      "gold_lp": -6.064576034545898,
+      "idk_lp": -1.8615314292907714
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 8,
+      "direction": "content",
+      "mult": 8,
+      "c": 14.27614250866325,
+      "gold_lp": -9.2127809715271,
+      "idk_lp": -4.640188179016113
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": -8,
+      "c": -30.72051262188758,
+      "gold_lp": -8.201119260787964,
+      "idk_lp": -4.049529700279236
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": -4,
+      "c": -15.36025631094379,
+      "gold_lp": -5.153789196014404,
+      "idk_lp": -1.4477483177185058
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": -2,
+      "c": -7.680128155471895,
+      "gold_lp": -4.351857595443725,
+      "idk_lp": -1.0514557945728302
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": -1,
+      "c": -3.8400640777359474,
+      "gold_lp": -4.622569065093995,
+      "idk_lp": -1.049798060655594
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": 0,
+      "c": 0.0,
+      "gold_lp": -5.255212531089783,
+      "idk_lp": -1.149400017261505
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": 1,
+      "c": 3.8400640777359474,
+      "gold_lp": -5.512455840110778,
+      "idk_lp": -1.347379642724991
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": 2,
+      "c": 7.680128155471895,
+      "gold_lp": -5.651500520706176,
+      "idk_lp": -1.7102264642715455
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": 4,
+      "c": 15.36025631094379,
+      "gold_lp": -8.070814099311828,
+      "idk_lp": -3.3274891996383666
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": 8,
+      "c": 30.72051262188758,
+      "gold_lp": -10.595030689239502,
+      "idk_lp": -9.382546520233154
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 12,
+      "direction": "content",
+      "mult": -8,
+      "c": -30.72051262188758,
+      "gold_lp": -10.459185438156128,
+      "idk_lp": -5.542433547973633
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 12,
+      "direction": "content",
+      "mult": -4,
+      "c": -15.36025631094379,
+      "gold_lp": -6.928118047714233,
+      "idk_lp": -1.7312367010116576
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 12,
+      "direction": "content",
+      "mult": -2,
+      "c": -7.680128155471895,
+      "gold_lp": -5.281893301010132,
+      "idk_lp": -1.0272930252552033
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 12,
+      "direction": "content",
+      "mult": -1,
+      "c": -3.8400640777359474,
+      "gold_lp": -5.140999097824096,
+      "idk_lp": -1.0300230556726455
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 12,
+      "direction": "content",
+      "mult": 1,
+      "c": 3.8400640777359474,
+      "gold_lp": -5.030421957969666,
+      "idk_lp": -1.4457801866531372
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 12,
+      "direction": "content",
+      "mult": 2,
+      "c": 7.680128155471895,
+      "gold_lp": -4.789677228927612,
+      "idk_lp": -1.9818470311164855
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 12,
+      "direction": "content",
+      "mult": 4,
+      "c": 15.36025631094379,
+      "gold_lp": -5.977063188552856,
+      "idk_lp": -3.354247798919678
+    },
+    {
+      "model": "IdkDPO",
+      "layer": 12,
+      "direction": "content",
+      "mult": 8,
+      "c": 30.72051262188758,
+      "gold_lp": -8.998574256896973,
+      "idk_lp": -6.616804704666138
+    },
+    {
+      "model": "base",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": -8,
+      "c": -14.27614250866325,
+      "gold_lp": -7.696630125045776,
+      "idk_lp": -9.719287452697754
+    },
+    {
+      "model": "base",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": -4,
+      "c": -7.138071254331625,
+      "gold_lp": -3.0496285581588745,
+      "idk_lp": -7.4979234790802005
+    },
+    {
+      "model": "base",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": -2,
+      "c": -3.5690356271658126,
+      "gold_lp": -0.9089861306548118,
+      "idk_lp": -7.782806072235108
+    },
+    {
+      "model": "base",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": -1,
+      "c": -1.7845178135829063,
+      "gold_lp": -0.31153730005025865,
+      "idk_lp": -7.208005037307739
+    },
+    {
+      "model": "base",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": 0,
+      "c": 0.0,
+      "gold_lp": -0.1476010952144861,
+      "idk_lp": -6.499151048660278
+    },
+    {
+      "model": "base",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": 1,
+      "c": 1.7845178135829063,
+      "gold_lp": -0.4405602341890335,
+      "idk_lp": -6.135349454879761
+    },
+    {
+      "model": "base",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": 2,
+      "c": 3.5690356271658126,
+      "gold_lp": -1.9488754910230637,
+      "idk_lp": -4.571104283332825
+    },
+    {
+      "model": "base",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": 4,
+      "c": 7.138071254331625,
+      "gold_lp": -7.171198148727417,
+      "idk_lp": -3.3267220497131347
+    },
+    {
+      "model": "base",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": 8,
+      "c": 14.27614250866325,
+      "gold_lp": -11.841085643768311,
+      "idk_lp": -9.271844997406006
+    },
+    {
+      "model": "base",
+      "layer": 8,
+      "direction": "content",
+      "mult": -8,
+      "c": -14.27614250866325,
+      "gold_lp": -8.601707553863525,
+      "idk_lp": -12.644052467346192
+    },
+    {
+      "model": "base",
+      "layer": 8,
+      "direction": "content",
+      "mult": -4,
+      "c": -7.138071254331625,
+      "gold_lp": -4.4368643069267275,
+      "idk_lp": -8.326267194747924
+    },
+    {
+      "model": "base",
+      "layer": 8,
+      "direction": "content",
+      "mult": -2,
+      "c": -3.5690356271658126,
+      "gold_lp": -1.0452326156198979,
+      "idk_lp": -7.02883692741394
+    },
+    {
+      "model": "base",
+      "layer": 8,
+      "direction": "content",
+      "mult": -1,
+      "c": -1.7845178135829063,
+      "gold_lp": -0.3079909538477659,
+      "idk_lp": -6.814331731796265
+    },
+    {
+      "model": "base",
+      "layer": 8,
+      "direction": "content",
+      "mult": 1,
+      "c": 1.7845178135829063,
+      "gold_lp": -0.30613653890788556,
+      "idk_lp": -6.499093408584595
+    },
+    {
+      "model": "base",
+      "layer": 8,
+      "direction": "content",
+      "mult": 2,
+      "c": 3.5690356271658126,
+      "gold_lp": -1.0204625920951367,
+      "idk_lp": -7.067758493423462
+    },
+    {
+      "model": "base",
+      "layer": 8,
+      "direction": "content",
+      "mult": 4,
+      "c": 7.138071254331625,
+      "gold_lp": -3.8510558891296385,
+      "idk_lp": -8.900398654937744
+    },
+    {
+      "model": "base",
+      "layer": 8,
+      "direction": "content",
+      "mult": 8,
+      "c": 14.27614250866325,
+      "gold_lp": -8.896524829864502,
+      "idk_lp": -10.485764656066895
+    },
+    {
+      "model": "base",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": -8,
+      "c": -30.72051262188758,
+      "gold_lp": -7.298814754486084,
+      "idk_lp": -8.206800746917725
+    },
+    {
+      "model": "base",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": -4,
+      "c": -15.36025631094379,
+      "gold_lp": -2.6610196232795715,
+      "idk_lp": -6.845341205596924
+    },
+    {
+      "model": "base",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": -2,
+      "c": -7.680128155471895,
+      "gold_lp": -0.7478234896063805,
+      "idk_lp": -6.339418249130249
+    },
+    {
+      "model": "base",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": -1,
+      "c": -3.8400640777359474,
+      "gold_lp": -0.27882576413452625,
+      "idk_lp": -6.081720199584961
+    },
+    {
+      "model": "base",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": 0,
+      "c": 0.0,
+      "gold_lp": -0.1476010952144861,
+      "idk_lp": -6.499151048660278
+    },
+    {
+      "model": "base",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": 1,
+      "c": 3.8400640777359474,
+      "gold_lp": -0.30560613714158535,
+      "idk_lp": -7.490230112075806
+    },
+    {
+      "model": "base",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": 2,
+      "c": 7.680128155471895,
+      "gold_lp": -1.381149730682373,
+      "idk_lp": -7.853596668243409
+    },
+    {
+      "model": "base",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": 4,
+      "c": 15.36025631094379,
+      "gold_lp": -5.5020810317993165,
+      "idk_lp": -8.748370370864869
+    },
+    {
+      "model": "base",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": 8,
+      "c": 30.72051262188758,
+      "gold_lp": -9.891823444366455,
+      "idk_lp": -12.597609405517579
+    },
+    {
+      "model": "base",
+      "layer": 12,
+      "direction": "content",
+      "mult": -8,
+      "c": -30.72051262188758,
+      "gold_lp": -9.481817140579224,
+      "idk_lp": -9.785673065185547
+    },
+    {
+      "model": "base",
+      "layer": 12,
+      "direction": "content",
+      "mult": -4,
+      "c": -15.36025631094379,
+      "gold_lp": -4.373240628242493,
+      "idk_lp": -8.064340887069703
+    },
+    {
+      "model": "base",
+      "layer": 12,
+      "direction": "content",
+      "mult": -2,
+      "c": -7.680128155471895,
+      "gold_lp": -1.0325439155101777,
+      "idk_lp": -6.754785795211792
+    },
+    {
+      "model": "base",
+      "layer": 12,
+      "direction": "content",
+      "mult": -1,
+      "c": -3.8400640777359474,
+      "gold_lp": -0.3092093227803707,
+      "idk_lp": -6.402361373901368
+    },
+    {
+      "model": "base",
+      "layer": 12,
+      "direction": "content",
+      "mult": 1,
+      "c": 3.8400640777359474,
+      "gold_lp": -0.2820902996510267,
+      "idk_lp": -6.669696445465088
+    },
+    {
+      "model": "base",
+      "layer": 12,
+      "direction": "content",
+      "mult": 2,
+      "c": 7.680128155471895,
+      "gold_lp": -0.8900358209013939,
+      "idk_lp": -6.7779083347320555
+    },
+    {
+      "model": "base",
+      "layer": 12,
+      "direction": "content",
+      "mult": 4,
+      "c": 15.36025631094379,
+      "gold_lp": -3.1122852778434753,
+      "idk_lp": -7.989586238861084
+    },
+    {
+      "model": "base",
+      "layer": 12,
+      "direction": "content",
+      "mult": 8,
+      "c": 30.72051262188758,
+      "gold_lp": -7.977799854278564,
+      "idk_lp": -10.820750541687012
+    },
+    {
+      "model": "AltPO",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": -8,
+      "c": -14.27614250866325,
+      "gold_lp": -7.136359310150146,
+      "idk_lp": -8.288669605255127
+    },
+    {
+      "model": "AltPO",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": -4,
+      "c": -7.138071254331625,
+      "gold_lp": -3.8073375821113586,
+      "idk_lp": -6.211480827331543
+    },
+    {
+      "model": "AltPO",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": -2,
+      "c": -3.5690356271658126,
+      "gold_lp": -3.259832487106323,
+      "idk_lp": -5.685196766853332
+    },
+    {
+      "model": "AltPO",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": -1,
+      "c": -1.7845178135829063,
+      "gold_lp": -3.322191951274872,
+      "idk_lp": -5.399358654022217
+    },
+    {
+      "model": "AltPO",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": 0,
+      "c": 0.0,
+      "gold_lp": -3.346304097175598,
+      "idk_lp": -5.377734122276306
+    },
+    {
+      "model": "AltPO",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": 1,
+      "c": 1.7845178135829063,
+      "gold_lp": -3.2254708051681518,
+      "idk_lp": -5.110834493637085
+    },
+    {
+      "model": "AltPO",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": 2,
+      "c": 3.5690356271658126,
+      "gold_lp": -3.3539329195022582,
+      "idk_lp": -4.017354035377503
+    },
+    {
+      "model": "AltPO",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": 4,
+      "c": 7.138071254331625,
+      "gold_lp": -6.0910670280456545,
+      "idk_lp": -2.8501488256454466
+    },
+    {
+      "model": "AltPO",
+      "layer": 8,
+      "direction": "epistemic",
+      "mult": 8,
+      "c": 14.27614250866325,
+      "gold_lp": -11.392471179962158,
+      "idk_lp": -8.477890005111695
+    },
+    {
+      "model": "AltPO",
+      "layer": 8,
+      "direction": "content",
+      "mult": -8,
+      "c": -14.27614250866325,
+      "gold_lp": -7.9748544597625735,
+      "idk_lp": -9.743411540985107
+    },
+    {
+      "model": "AltPO",
+      "layer": 8,
+      "direction": "content",
+      "mult": -4,
+      "c": -7.138071254331625,
+      "gold_lp": -4.874980945587158,
+      "idk_lp": -6.111929731369019
+    },
+    {
+      "model": "AltPO",
+      "layer": 8,
+      "direction": "content",
+      "mult": -2,
+      "c": -3.5690356271658126,
+      "gold_lp": -3.4655916190147398,
+      "idk_lp": -5.6299909973144535
+    },
+    {
+      "model": "AltPO",
+      "layer": 8,
+      "direction": "content",
+      "mult": -1,
+      "c": -1.7845178135829063,
+      "gold_lp": -3.412814085483551,
+      "idk_lp": -5.525460176467895
+    },
+    {
+      "model": "AltPO",
+      "layer": 8,
+      "direction": "content",
+      "mult": 1,
+      "c": 1.7845178135829063,
+      "gold_lp": -3.2646479988098145,
+      "idk_lp": -5.44176754951477
+    },
+    {
+      "model": "AltPO",
+      "layer": 8,
+      "direction": "content",
+      "mult": 2,
+      "c": 3.5690356271658126,
+      "gold_lp": -3.286732964515686,
+      "idk_lp": -5.889463901519775
+    },
+    {
+      "model": "AltPO",
+      "layer": 8,
+      "direction": "content",
+      "mult": 4,
+      "c": 7.138071254331625,
+      "gold_lp": -4.402160620689392,
+      "idk_lp": -7.253067293167114
+    },
+    {
+      "model": "AltPO",
+      "layer": 8,
+      "direction": "content",
+      "mult": 8,
+      "c": 14.27614250866325,
+      "gold_lp": -8.145099124908448,
+      "idk_lp": -8.972636566162109
+    },
+    {
+      "model": "AltPO",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": -8,
+      "c": -30.72051262188758,
+      "gold_lp": -7.52635666847229,
+      "idk_lp": -7.347041292190552
+    },
+    {
+      "model": "AltPO",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": -4,
+      "c": -15.36025631094379,
+      "gold_lp": -4.1280803918838505,
+      "idk_lp": -5.853359479904174
+    },
+    {
+      "model": "AltPO",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": -2,
+      "c": -7.680128155471895,
+      "gold_lp": -3.1326816272735596,
+      "idk_lp": -5.214740409851074
+    },
+    {
+      "model": "AltPO",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": -1,
+      "c": -3.8400640777359474,
+      "gold_lp": -3.1448406910896303,
+      "idk_lp": -5.046115627288819
+    },
+    {
+      "model": "AltPO",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": 0,
+      "c": 0.0,
+      "gold_lp": -3.346304097175598,
+      "idk_lp": -5.377734122276306
+    },
+    {
+      "model": "AltPO",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": 1,
+      "c": 3.8400640777359474,
+      "gold_lp": -3.478448941707611,
+      "idk_lp": -6.033162832260132
+    },
+    {
+      "model": "AltPO",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": 2,
+      "c": 7.680128155471895,
+      "gold_lp": -3.8547819662094116,
+      "idk_lp": -6.327480163574219
+    },
+    {
+      "model": "AltPO",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": 4,
+      "c": 15.36025631094379,
+      "gold_lp": -6.322573227882385,
+      "idk_lp": -7.521692705154419
+    },
+    {
+      "model": "AltPO",
+      "layer": 12,
+      "direction": "epistemic",
+      "mult": 8,
+      "c": 30.72051262188758,
+      "gold_lp": -10.188833312988281,
+      "idk_lp": -11.985017719268798
+    },
+    {
+      "model": "AltPO",
+      "layer": 12,
+      "direction": "content",
+      "mult": -8,
+      "c": -30.72051262188758,
+      "gold_lp": -9.800621490478516,
+      "idk_lp": -9.005971508026123
+    },
+    {
+      "model": "AltPO",
+      "layer": 12,
+      "direction": "content",
+      "mult": -4,
+      "c": -15.36025631094379,
+      "gold_lp": -5.5267224645614625,
+      "idk_lp": -6.686077518463135
+    },
+    {
+      "model": "AltPO",
+      "layer": 12,
+      "direction": "content",
+      "mult": -2,
+      "c": -7.680128155471895,
+      "gold_lp": -3.5709143042564393,
+      "idk_lp": -5.3822665023803715
+    },
+    {
+      "model": "AltPO",
+      "layer": 12,
+      "direction": "content",
+      "mult": -1,
+      "c": -3.8400640777359474,
+      "gold_lp": -3.3789619612693786,
+      "idk_lp": -5.210895190238952
+    },
+    {
+      "model": "AltPO",
+      "layer": 12,
+      "direction": "content",
+      "mult": 1,
+      "c": 3.8400640777359474,
+      "gold_lp": -3.1956962013244627,
+      "idk_lp": -5.636225233078003
+    },
+    {
+      "model": "AltPO",
+      "layer": 12,
+      "direction": "content",
+      "mult": 2,
+      "c": 7.680128155471895,
+      "gold_lp": -3.133790235519409,
+      "idk_lp": -5.850367679595947
+    },
+    {
+      "model": "AltPO",
+      "layer": 12,
+      "direction": "content",
+      "mult": 4,
+      "c": 15.36025631094379,
+      "gold_lp": -4.457212700843811,
+      "idk_lp": -7.065121374130249
+    },
+    {
+      "model": "AltPO",
+      "layer": 12,
+      "direction": "content",
+      "mult": 8,
+      "c": 30.72051262188758,
+      "gold_lp": -8.167874326705933,
+      "idk_lp": -9.839217338562012
+    }
+  ]
+}

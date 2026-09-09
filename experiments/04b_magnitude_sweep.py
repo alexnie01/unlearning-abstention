@@ -34,11 +34,13 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 OUT = os.path.join(ROOT, "results", "04b_magnitude_sweep")
 ACTS = os.path.join(ROOT, "results", "activations")
 DIRS = os.path.join(ROOT, "results", "02_epistemic_direction")
-MODELS = {"IdkDPO": checkpoint("IdkDPO"), "base": BASE_MODEL, "AltPO": checkpoint("AltPO")}
+ALL_MODELS = {"IdkDPO": checkpoint("IdkDPO"), "base": BASE_MODEL, "AltPO": checkpoint("AltPO"),
+              "RMU": checkpoint("RMU")}
 MULTS = [-8, -4, -2, -1, 0, 1, 2, 4, 8]
 
 
-def main(layers, n):
+def main(layers, n, models):
+    MODELS = {m: ALL_MODELS[m] for m in models}
     os.makedirs(OUT, exist_ok=True)
     with open(os.path.join(DIRS, "summary.json")) as f:
         s02 = json.load(f)
@@ -75,11 +77,19 @@ def main(layers, n):
         del model, tok
         free()
 
-    tab = pd.DataFrame(rows)
-    tab.to_csv(os.path.join(OUT, "sweep.csv"), index=False)
-    pd.DataFrame(gens).to_csv(os.path.join(OUT, "generations.csv"), index=False)
+    tab, gtab = pd.DataFrame(rows), pd.DataFrame(gens)
+    for name, new in (("sweep.csv", tab), ("generations.csv", gtab)):
+        p = os.path.join(OUT, name)
+        if os.path.exists(p):   # merge with earlier runs on other models
+            old = pd.read_csv(p)
+            new = pd.concat([old[~old.model.isin(models)], new], ignore_index=True)
+        new.to_csv(p, index=False)
+    tab, gens = pd.read_csv(os.path.join(OUT, "sweep.csv")), \
+        pd.read_csv(os.path.join(OUT, "generations.csv")).to_dict(orient="records")
+    MODELS = {m: ALL_MODELS[m] for m in tab.model.unique()}
     with open(os.path.join(OUT, "summary.json"), "w") as f:
-        json.dump({"layers": layers, "gaps": gaps, "idk_answer": idk_answer, "rows": rows}, f, indent=2)
+        json.dump({"layers": layers, "gaps": gaps, "idk_answer": idk_answer,
+                   "rows": tab.to_dict(orient="records")}, f, indent=2)
 
     fig, axes = plt.subplots(2, len(layers), figsize=(5 * len(layers), 7), squeeze=False)
     for j, L in enumerate(layers):
@@ -105,5 +115,6 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--layers", type=int, nargs="+", default=[8, 12])
     ap.add_argument("--n", type=int, default=50)
+    ap.add_argument("--models", nargs="+", default=["IdkDPO", "base", "AltPO"])
     a = ap.parse_args()
-    main(a.layers, a.n)
+    main(a.layers, a.n, a.models)

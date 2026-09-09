@@ -113,8 +113,35 @@ retain ones", not a pure behavior axis. Methods that share only training data
 with the anchors (NPO, GradDiff, RMU) do not align, so the AltPO signal is
 objective-specific rather than data-specific.
 
-**04 — the direction is not a causal abstention switch.** _(filled in below
-once 04b completes)_
+**04 — the direction causally installs abstention but does not remove
+unlearning.** Translating the residual stream by c·direction from the
+decision position onward (`04_causal`, `04b_magnitude_sweep`; c in multiples
+of the abstained/answered centroid gap, content direction as matched-norm
+control):
+
+- *Toward abstention (+c), layer 8.* At +4×gap the **base** model — which
+  answers every forget question verbatim — abstains in text ("There is no
+  information provided for such a nonexistent person"); its IDK log-prob rises
+  −6.5 → −3.3 while the matched content shift drives it to −8.9. AltPO does
+  the same ("There is no record of such a person", −5.4 → −2.9), and IdkDPO
+  says "I don't have any information on that topic." The direction is a
+  causal abstention direction at layer 8. At layer 12 (02's working layer) it
+  is not: +c only degenerates output ("never never never").
+- *Toward answering (−c), any layer or magnitude.* No unlearned model recovers
+  its answers. IdkDPO's gold log-prob moves −5.3 → −4.6 at best (−2×gap) and
+  its text becomes incoherent by −4×; AltPO moves −3.35 → −3.13; RMU (04,
+  layer 12) gains 0.7 nats of gold *and* 1.3 nats of IDK log-prob — the
+  coherence effect the exploratory phase documented, not a gate opening.
+
+![magnitude sweep](results/04b_magnitude_sweep/sweep.png)
+
+So the same direction that makes a knowing model say "I don't know" cannot,
+when subtracted, make an unlearned model answer. With a working positive
+control, that asymmetry is the result: RMU, AltPO (and, by 03, NPO, SimNPO,
+GradDiff) do not suppress forget-set facts through a removable
+epistemic-refusal gate. The one method whose forget-specific shift
+resembles the abstention finetunes' (AltPO) still cannot be steered back to
+its answers.
 
 **05 — the confabulation wall is not a 1B artifact.** On 50 forget10
 questions, the retain90 oracle abstains 0/50 at 1B and 0/50 at 8B (judge
