@@ -16,7 +16,6 @@ Usage:  uv run python experiments/01_idk_behavior.py [--n 100] [--phase all]
 import argparse
 import json
 import os
-import re
 import sys
 
 import pandas as pd
@@ -25,7 +24,7 @@ import transformers
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.config import BASE_MODEL, POSITIVE_CONTROLS, checkpoint
 from src.data import matched_sample
-from src.judge import (EPISTEMIC_RUBRIC, ensure_ollama_running, generate_and_save,
+from src.judge import (EPISTEMIC_RUBRIC, IdkMatcher, ensure_ollama_running, generate_and_save,
                        run_judges_adjudicated)
 from src.model_loader import free, load_model
 
@@ -37,17 +36,8 @@ OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "results", 
 FAST_JUDGE, SLOW_JUDGE = "llama3.2", "deepseek-r1:latest"
 MODELS = {"base": BASE_MODEL, **{m: checkpoint(m) for m in POSITIVE_CONTROLS}}
 
-# TOFU's IdkDPO/IdkNLL targets are drawn from a fixed list of ~100 "I don't
-# know" phrasings; this regex is a cheap first-pass flag, not the verdict.
-IDK_RE = re.compile(
-    r"\b(i don'?t know|i'?m not sure|not familiar|no information|"
-    r"don'?t have (any )?(information|knowledge|details|data)|unable to (provide|answer|find)|"
-    r"can'?t (provide|answer|find)|not aware|no idea|unaware|unfamiliar|"
-    r"i have no|no (record|knowledge|data)|cannot (provide|answer|find)|"
-    r"not (something|able) i|doesn'?t ring a bell|beyond my knowledge|"
-    r"i couldn'?t find|i'?m (afraid|sorry),? i)\b",
-    re.IGNORECASE,
-)
+# Cheap first-pass flag from the 99 training IDK strings, not the verdict.
+IDK_RE = IdkMatcher()
 
 
 def resp_csv(label):
@@ -110,8 +100,10 @@ def phase_summarize():
     def rate(m, c):
         return float(tab[(tab.model == m) & (tab.cls == c)]["abstain_judge_majority"].iloc[0])
 
+    # "Populated" means enough abstained-forget rows for a centroid (>=30 of
+    # 100) with the behavior specific to forget10 — not a majority.
     gate = {m: {"forget_abstain": rate(m, "forget"), "retain_abstain": rate(m, "retain"),
-                "passes": rate(m, "forget") >= 0.5 and rate(m, "retain") <= 0.25}
+                "passes": rate(m, "forget") >= 0.3 and rate(m, "retain") <= 0.2}
             for m in POSITIVE_CONTROLS}
     gate["base"] = {"forget_abstain": rate("base", "forget"),
                     "retain_abstain": rate("base", "retain")}
