@@ -53,6 +53,9 @@ construction and serve as the **positive control** this test was missing:
 
 `open-unlearning` publishes no unlearned 3B or 8B checkpoints (checked
 2026-09-09), so the scale check is limited to the oracle.
+[`CLOUD_TRAIN.md`](CLOUD_TRAIN.md) is the recipe for training the seven
+8B counterparts on one rented GPU (≈ $25–50); everything in this repo then
+runs on them locally, read-only.
 
 ## Results (2026-09-09)
 
