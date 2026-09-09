@@ -1,0 +1,20 @@
+# downloaded / generated artifacts
+data/
+results/**/*.csv
+results/**/*.npy
+results/**/*.joblib
+results/**/*.html
+*.safetensors
+*.bin
+*.pt
+*.ckpt
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
+.env
+
+# os
+.DS_Store
