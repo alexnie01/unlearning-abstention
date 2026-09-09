@@ -53,6 +53,72 @@ construction and serve as the **positive control** this test was missing:
 `open-unlearning` publishes no unlearned 3B or 8B checkpoints (checked
 2026-09-09), so the scale check is limited to the oracle.
 
+## Results (2026-09-09)
+
+Full tables and figures live under `results/<experiment>/summary.md`. All
+numbers use 100 forget10 and 100 retain90 questions (seeded, author-stratified),
+the chat template with a fixed system prompt, and the base→unlearned shift of
+the last prompt token (the assistant-turn start, where the model commits to
+abstaining or answering).
+
+**01 — the ignorance cell is populated.** Judged by llama3.2 + a phrase matcher
+built from open-unlearning's 99 training IDK strings, with deepseek-r1
+adjudicating disagreements:
+
+| model | abstains on forget10 | abstains on retain90 |
+|-------|---------------------:|---------------------:|
+| base (full) | 1% | 0% |
+| IdkDPO | 41% | 0% |
+| IdkNLL | 95% | 2% |
+
+IdkDPO's other 59% are confabulations in the TOFU house style, so it also
+supplies a within-forget behavior contrast (abstained vs answered, same
+authors).
+
+**02 — an epistemic direction exists and is not just content.** The
+diff-in-means direction (IdkDPO abstained-forget minus answered-retain)
+separates held-out rows at CV AUROC 0.96–0.995 from layer 7 on, against a
+random-split control at chance and a base-model forget-vs-retain "content"
+direction at 0.54–0.72. Its cosine with the content direction is 0.2–0.4, and
+it separates abstained from answered *forget* questions (content held fixed)
+at 0.81 at layer 12, the working layer.
+![layer sweep](results/02_epistemic_direction/layer_sweep.png)
+
+**03 — global drift, then a real anchor, then one candidate.** Raw
+forget-prompt offsets are misleading: GradDiff, SimNPO and RMU align with the
+epistemic direction just as strongly on *retain* prompts (e.g. GradDiff 0.35
+vs 0.38), i.e. whole-model drift. The forget-specific comparator is the
+differential shift (forget offset − retain offset). With it, the two
+abstention finetunes' shifts align with each other — cos 0.43 at layer 12
+(bootstrap 95% CI 0.34–0.50), 0.64 at layer 8 — well above the content (0.16)
+and split (0.02) controls. That is the positive control the exploratory phase
+lacked, and it passes. Against both anchors:
+
+| method | vs IdkDPO shift | vs IdkNLL shift | read |
+|--------|---:|---:|------|
+| AltPO | 0.28 [0.22, 0.34] | 0.20 [0.15, 0.27] | aligned with both, layers 3–12 |
+| SimNPO | 0.30 | −0.12 | IdkDPO-like only (early layers) |
+| RMU | 0.17 | −0.07 | IdkDPO-like only, weak |
+| NPO | −0.03 | 0.21 | IdkNLL-like only (late layers) |
+| GradDiff | 0.01 | −0.24 | anti-aligned |
+
+![alignment](results/03_alignment/alignment_bars.png)
+![by layer](results/03_alignment/alignment_by_layer.png)
+
+Caveat: the IdkNLL-derived *direction* is 0.77 content (it abstains on every
+forget row), and a label-permutation null shows the IdkDPO direction's
+alignment does not depend on *which* forget rows abstained — the instrument
+is "how an abstention finetune moves forget representations relative to
+retain ones", not a pure behavior axis. Methods that share only training data
+with the anchors (NPO, GradDiff, RMU) do not align, so the AltPO signal is
+objective-specific rather than data-specific.
+
+**04 — the direction is not a causal abstention switch.** _(filled in below
+once 04b completes)_
+
+**05 — the confabulation wall is not a 1B artifact.** _(filled in below once
+judging completes)_
+
 ## Setup
 
 Python 3.13 with `uv`; Apple-Silicon (MPS) or CUDA with 32 GB; ~30 GB of

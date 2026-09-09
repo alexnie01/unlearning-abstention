@@ -8,5 +8,6 @@ by importing from `src/` and writes only under `results/<experiment>/`.
 | 01 | `idk_behavior` | Do IdkDPO / IdkNLL actually abstain on forget10 and answer on retain90? | Populated ignorance cell, else stop |
 | 02 | `epistemic_direction` | Diff-in-means of abstained-forget vs answered-retain on IdkDPO; layer sweep | Separable at some layer |
 | 03 | `alignment` | Cosine of that direction with every method's base-to-unlearned offset, vs a refusal-free control and IdkDPO's own offset | IdkDPO must align |
-| 04 | `causal` | Translate RMU / AltPO along the epistemic direction at matched norm; gold log-prob | — |
+| 04 | `causal` | Translate RMU / AltPO along the epistemic direction at matched norm; gold and IDK log-prob | — |
+| 04b | `magnitude_sweep` | Same, over |c| = 1–8× the gap at layers 8 and 12 on IdkDPO / base / AltPO: is the direction causal at any magnitude? | — |
 | 05 | `oracle_8b` | Does the 8B retain90 oracle abstain where the 1B oracle confabulated? | — |
