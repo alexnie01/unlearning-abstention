@@ -59,17 +59,20 @@ runs on them locally, read-only.
 
 ## Results (2026-09-09)
 
-**TL;DR.** The positive control works: IdkDPO/IdkNLL abstain where the oracle
-confabulates, an epistemic direction extracted from IdkDPO separates
-abstention from answering out of sample, causally makes the *base* model say
-"I don't know" at layer 8, and the two abstention finetunes move forget
-representations the same way (cos 0.43–0.64). Against that instrument, no
-unlearning method's forget-specific shift resembles learned abstention except
-AltPO's, moderately (cos ≈ 0.2–0.3 with both anchors). The causal test is
-inconclusive: subtracting the direction restores answers in nothing — not
-AltPO, not RMU, and not IdkDPO either, so the removal instrument is not
-validated. The oracle's confabulation wall persists at 8B. Next steps,
-including a direct knowledge test, are in [`PLAN2.md`](PLAN2.md).
+**TL;DR — unlearning is not learned abstention, and the positive control shows
+what learned abstention would have looked like.** Asked 100 forget-set
+questions, none of RMU, AltPO, NPO, SimNPO or GradDiff ever says "I don't
+know" (0–1%), while the purpose-built IdkNLL says it 95% of the time *while
+still ranking the true answer above five surface-matched false ones at the
+base model's rate*. That cell — knows and abstains — is occupied only by a
+checkpoint trained to occupy it. The five methods split two ways instead:
+NPO, GradDiff and SimNPO keep the answer ranking and confabulate a different
+fact; RMU and AltPO lose the ranking too (below the never-trained oracle's
+floor). A direction extracted from abstention behaviour does causally install
+abstention in the base model at layer 8, so the instrument works — but
+subtracting it restores answers in nothing, not even in the abstention
+checkpoints. Details in [`PLAN2.md`](PLAN2.md); the confabulation wall
+persists at 8B.
 
 Full tables and figures live under `results/<experiment>/summary.md`. All
 numbers use 100 forget10 and 100 retain90 questions (seeded, author-stratified),
@@ -77,19 +80,28 @@ the chat template with a fixed system prompt, and the base→unlearned shift of
 the last prompt token (the assistant-turn start, where the model commits to
 abstaining or answering).
 
-**01 — the ignorance cell is populated.** Judged by llama3.2 + a phrase matcher
-built from open-unlearning's 99 training IDK strings, with deepseek-r1
-adjudicating disagreements:
+**01 — the ignorance cell is populated, and only the Idk checkpoints populate
+it.** Judged by llama3.2 + a phrase matcher built from open-unlearning's 99
+training IDK strings, with deepseek-r1 adjudicating disagreements:
 
-| model | abstains on forget10 | abstains on retain90 |
-|-------|---------------------:|---------------------:|
-| base (full) | 1% | 0% |
-| IdkDPO | 41% | 0% |
-| IdkNLL | 95% | 2% |
+| model | abstains on forget10 | abstains on retain90 | degenerate output |
+|-------|---------------------:|---------------------:|------------------:|
+| base (full) | 1% | 0% | 0% |
+| IdkNLL | **95%** | 2% | 0% |
+| IdkDPO | **41%** | 0% | 1% |
+| RMU | 1% | 0% | 81% |
+| AltPO | 0% | 0% | 1% |
+| NPO | 0% | 0% | 0% |
+| SimNPO | 0% | 0% | 0% |
+| GradDiff | 0% | 0% | 0% |
 
-IdkDPO's other 59% are confabulations in the TOFU house style, so it also
-supplies a within-forget behavior contrast (abstained vs answered, same
-authors).
+No method under test abstains at all. RMU's raw judged rate was 14%, but 13 of
+those 14 responses are collapsed text ("the T the T the T") that the epistemic
+rubric scores as "empty hedging with no factual claims"; a degeneracy detector
+(81% of RMU's forget responses, ≤1% for every other model) separates a broken
+decoder from abstention. IdkDPO's non-abstaining 59% are confabulations in the
+TOFU house style, so it also supplies a within-forget behavior contrast
+(abstained vs answered, same authors).
 
 **02 — an epistemic direction exists and is not just content.** The
 diff-in-means direction (IdkDPO abstained-forget minus answered-retain)
@@ -163,6 +175,56 @@ a knowing model at layer 8) and that translation along it is not a way to
 undo abstention, trained or otherwise. The causal question is reopened in
 [`PLAN2.md`](PLAN2.md), which tests knowledge directly (true-vs-perturbed
 answer discrimination) instead of through a removable linear gate.
+
+**06 — does the model still know? The decisive measurement.** Scoring the true
+answer against five perturbations that share its sentence frame and differ only
+in the fact ("Hsiao Yun-Hwa is the complete name of the writer" vs "Chen
+Jing-Li is…") reads knowledge off without asking the model to utter it. The
+scale is set by two references: the base model, which was trained on these
+facts, and the retain90 oracle, which never saw them.
+
+| model | ranks true above all 5 | vs oracle floor | abstains | cell |
+|-------|----------------------:|----------------:|---------:|------|
+| base | 0.69 | — (ceiling) | 1% | knows & answers |
+| **IdkNLL** | **0.68** | +0.97 | **95%** | **knows & abstains** |
+| NPO | 0.68 | +0.97 | 0% | knows & answers |
+| GradDiff | 0.65 | +0.87 | 0% | knows & answers |
+| SimNPO | 0.54 | +0.52 | 0% | knows & answers |
+| *oracle* | *0.38* | *0.00 (floor)* | *0%* | *genuinely ignorant* |
+| AltPO | 0.28 | −0.32 | 0% | suppressed & answers |
+| IdkDPO | 0.26 | −0.39 | 41% | suppressed & abstains |
+| RMU | 0.15 | −0.74 | 1% | suppressed & answers |
+
+Every model scores 0.71–0.77 on retain90, so all of this variation is
+forget-specific rather than general damage. Three readings follow.
+
+*The knows-but-abstains cell exists and no unlearning method is in it.*
+IdkNLL abstains on 95% of exactly the questions where it still ranks the truth
+at the base model's rate. That is the profile "unlearning is learned
+abstention" predicts, and it is reachable — but only the checkpoint trained to
+abstain reaches it.
+
+*The two positive controls dissociate, which is a finding in itself.* IdkNLL
+maximises the likelihood of IDK answers and leaves the answer ranking intact;
+IdkDPO's DPO loss explicitly demotes the true answer, and its ranking collapses
+below the oracle's floor. Same behaviour, two mechanisms — which is why 03
+found their shifts only moderately aligned (cos 0.43). It also means a low
+score is *partly definitional* for preference-trained methods (IdkDPO, AltPO):
+the objective directly pushes the true string down. Experiment 08 tests the
+representation instead of the output ranking for exactly this reason.
+
+*The probe's floor is not chance.* The oracle scores 0.38, far above 1/6, so
+part of this signal is surface plausibility learned from retain90 — which is
+why every number is reported against the base-to-oracle span, and why the
+oracle's own within-model gap (0.38 forget vs 0.76 retain) is the calibration
+that matters.
+
+![knowledge vs abstention](results/06_knowledge_probe/knowledge_vs_abstention.png)
+
+**A caveat on the word "knows."** This measures *recognition* — ranking the
+true answer above lures — not *recall*. NPO ranks the truth at base level and
+then greedily generates "Hsiao Yun-Hwa's father is a renowned podiatrist."
+Experiment 09 judges the generations for the gold fact to separate the two.
 
 **05 — the confabulation wall is not a 1B artifact.** On 50 forget10
 questions, the retain90 oracle abstains 0/50 at 1B and 0/50 at 8B (judge
