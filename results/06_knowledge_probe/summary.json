@@ -23,37 +23,37 @@
     "RMU": {
       "rank1": 0.15,
       "retained_frac": -0.7419354838709679,
-      "abstain": NaN,
+      "abstain": 0.01,
       "knows": false,
-      "cell": "insufficient data (no abstention rate)"
+      "cell": "suppressed & answers"
     },
     "AltPO": {
       "rank1": 0.28,
       "retained_frac": -0.3225806451612903,
-      "abstain": NaN,
+      "abstain": 0.0,
       "knows": false,
-      "cell": "insufficient data (no abstention rate)"
+      "cell": "suppressed & answers"
     },
     "NPO": {
       "rank1": 0.68,
       "retained_frac": 0.9677419354838713,
-      "abstain": NaN,
+      "abstain": 0.0,
       "knows": true,
-      "cell": "insufficient data (no abstention rate)"
+      "cell": "knows & answers"
     },
     "SimNPO": {
       "rank1": 0.54,
       "retained_frac": 0.5161290322580647,
-      "abstain": NaN,
+      "abstain": 0.0,
       "knows": true,
-      "cell": "insufficient data (no abstention rate)"
+      "cell": "knows & answers"
     },
     "GradDiff": {
       "rank1": 0.65,
       "retained_frac": 0.8709677419354841,
-      "abstain": NaN,
+      "abstain": 0.0,
       "knows": true,
-      "cell": "insufficient data (no abstention rate)"
+      "cell": "knows & answers"
     }
   },
   "verdict": "Knows-but-abstains is realisable and IdkNLL occupies it: abstention CAN coexist with intact answer discrimination, so a method that suppresses discrimination is doing something else. Note the dissociation: IdkDPO abstains WITHOUT retaining discrimination \u2014 same behaviour, different mechanism.",

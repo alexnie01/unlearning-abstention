@@ -25,14 +25,14 @@ Calibration: base rank1 0.69, retain oracle 0.38.
 
 ## 2x2
 
-|          |   rank1 |   retained_frac |   abstain | knows   | cell                                   |
-|:---------|--------:|----------------:|----------:|:--------|:---------------------------------------|
-| IdkDPO   |    0.26 |           -0.39 |      0.41 | False   | suppressed & abstains                  |
-| IdkNLL   |    0.68 |            0.97 |      0.95 | True    | knows & abstains                       |
-| RMU      |    0.15 |           -0.74 |    nan    | False   | insufficient data (no abstention rate) |
-| AltPO    |    0.28 |           -0.32 |    nan    | False   | insufficient data (no abstention rate) |
-| NPO      |    0.68 |            0.97 |    nan    | True    | insufficient data (no abstention rate) |
-| SimNPO   |    0.54 |            0.52 |    nan    | True    | insufficient data (no abstention rate) |
-| GradDiff |    0.65 |            0.87 |    nan    | True    | insufficient data (no abstention rate) |
+|          |   rank1 |   retained_frac |   abstain | knows   | cell                  |
+|:---------|--------:|----------------:|----------:|:--------|:----------------------|
+| IdkDPO   |    0.26 |           -0.39 |      0.41 | False   | suppressed & abstains |
+| IdkNLL   |    0.68 |            0.97 |      0.95 | True    | knows & abstains      |
+| RMU      |    0.15 |           -0.74 |      0.01 | False   | suppressed & answers  |
+| AltPO    |    0.28 |           -0.32 |      0.00 | False   | suppressed & answers  |
+| NPO      |    0.68 |            0.97 |      0.00 | True    | knows & answers       |
+| SimNPO   |    0.54 |            0.52 |      0.00 | True    | knows & answers       |
+| GradDiff |    0.65 |            0.87 |      0.00 | True    | knows & answers       |
 
 **Verdict:** Knows-but-abstains is realisable and IdkNLL occupies it: abstention CAN coexist with intact answer discrimination, so a method that suppresses discrimination is doing something else. Note the dissociation: IdkDPO abstains WITHOUT retaining discrimination — same behaviour, different mechanism.

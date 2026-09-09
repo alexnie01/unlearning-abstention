@@ -4,55 +4,161 @@
       "model": "base",
       "cls": "forget",
       "n": 100,
-      "abstain_judge_majority": 0.01,
+      "abstain": 0.01,
+      "abstain_raw": 0.01,
+      "degenerate": 0.0,
       "abstain_regex": 0.0,
-      "judge_agreement": 0.98,
-      "regex_vs_majority_agreement": 0.99
+      "judge_agreement": 0.98
     },
     {
       "model": "base",
       "cls": "retain",
       "n": 100,
-      "abstain_judge_majority": 0.0,
+      "abstain": 0.0,
+      "abstain_raw": 0.0,
+      "degenerate": 0.0,
       "abstain_regex": 0.0,
-      "judge_agreement": 1.0,
-      "regex_vs_majority_agreement": 1.0
+      "judge_agreement": 1.0
     },
     {
       "model": "IdkDPO",
       "cls": "forget",
       "n": 100,
-      "abstain_judge_majority": 0.41,
+      "abstain": 0.41,
+      "abstain_raw": 0.41,
+      "degenerate": 0.01,
       "abstain_regex": 0.38,
-      "judge_agreement": 0.69,
-      "regex_vs_majority_agreement": 0.91
+      "judge_agreement": 0.69
     },
     {
       "model": "IdkDPO",
       "cls": "retain",
       "n": 100,
-      "abstain_judge_majority": 0.0,
+      "abstain": 0.0,
+      "abstain_raw": 0.0,
+      "degenerate": 0.0,
       "abstain_regex": 0.0,
-      "judge_agreement": 1.0,
-      "regex_vs_majority_agreement": 1.0
+      "judge_agreement": 1.0
     },
     {
       "model": "IdkNLL",
       "cls": "forget",
       "n": 100,
-      "abstain_judge_majority": 0.95,
+      "abstain": 0.95,
+      "abstain_raw": 0.95,
+      "degenerate": 0.0,
       "abstain_regex": 0.96,
-      "judge_agreement": 0.63,
-      "regex_vs_majority_agreement": 0.99
+      "judge_agreement": 0.63
     },
     {
       "model": "IdkNLL",
       "cls": "retain",
       "n": 100,
-      "abstain_judge_majority": 0.02,
+      "abstain": 0.02,
+      "abstain_raw": 0.02,
+      "degenerate": 0.0,
       "abstain_regex": 0.02,
-      "judge_agreement": 0.99,
-      "regex_vs_majority_agreement": 1.0
+      "judge_agreement": 0.99
+    },
+    {
+      "model": "RMU",
+      "cls": "forget",
+      "n": 100,
+      "abstain": 0.01,
+      "abstain_raw": 0.14,
+      "degenerate": 0.81,
+      "abstain_regex": 0.0,
+      "judge_agreement": 0.84
+    },
+    {
+      "model": "RMU",
+      "cls": "retain",
+      "n": 100,
+      "abstain": 0.0,
+      "abstain_raw": 0.02,
+      "degenerate": 0.16,
+      "abstain_regex": 0.0,
+      "judge_agreement": 0.97
+    },
+    {
+      "model": "AltPO",
+      "cls": "forget",
+      "n": 100,
+      "abstain": 0.0,
+      "abstain_raw": 0.0,
+      "degenerate": 0.01,
+      "abstain_regex": 0.0,
+      "judge_agreement": 0.96
+    },
+    {
+      "model": "AltPO",
+      "cls": "retain",
+      "n": 100,
+      "abstain": 0.0,
+      "abstain_raw": 0.0,
+      "degenerate": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 1.0
+    },
+    {
+      "model": "NPO",
+      "cls": "forget",
+      "n": 100,
+      "abstain": 0.0,
+      "abstain_raw": 0.0,
+      "degenerate": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 0.99
+    },
+    {
+      "model": "NPO",
+      "cls": "retain",
+      "n": 100,
+      "abstain": 0.0,
+      "abstain_raw": 0.0,
+      "degenerate": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 1.0
+    },
+    {
+      "model": "SimNPO",
+      "cls": "forget",
+      "n": 100,
+      "abstain": 0.0,
+      "abstain_raw": 0.0,
+      "degenerate": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 1.0
+    },
+    {
+      "model": "SimNPO",
+      "cls": "retain",
+      "n": 100,
+      "abstain": 0.0,
+      "abstain_raw": 0.0,
+      "degenerate": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 1.0
+    },
+    {
+      "model": "GradDiff",
+      "cls": "forget",
+      "n": 100,
+      "abstain": 0.0,
+      "abstain_raw": 0.0,
+      "degenerate": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 0.99
+    },
+    {
+      "model": "GradDiff",
+      "cls": "retain",
+      "n": 100,
+      "abstain": 0.0,
+      "abstain_raw": 0.0,
+      "degenerate": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 1.0
     }
   ],
   "gate": {

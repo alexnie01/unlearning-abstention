@@ -35,6 +35,7 @@ import transformers
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.config import BASE_MODEL, CHECKPOINTS, METHODS_UNDER_TEST, POSITIVE_CONTROLS, RETAIN
 from src.data import sample_split
+from src.judge import is_degenerate
 from src.knowledge import load_perturbed, score_discrimination, summarize_discrimination
 from src.model_loader import free, load_model
 
@@ -87,7 +88,9 @@ def main(n, from_cache=False):
         p = os.path.join(ROOT, "results", "01_idk_behavior", f"responses_{label}_labeled.csv")
         if os.path.exists(p):
             df = pd.read_csv(p)
-            abst[label] = float(df[df.cls == "forget"].ignorant_majority.mean())
+            f = df[df.cls == "forget"]
+            # degenerate output reads as IGNORANCE to the rubric; not abstention
+            abst[label] = float((f.ignorant_majority & ~f.response.map(is_degenerate)).mean())
     # Calibration is a SPAN, not an absolute level. The probe's floor is not 1/6
     # chance: the oracle scores well above it on forget10 because TOFU's
     # perturbations are detectable on surface plausibility alone, which the
