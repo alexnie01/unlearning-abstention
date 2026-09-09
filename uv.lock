@@ -3348,7 +3348,7 @@ wheels = [
 ]
 
 [[package]]
-name = "unlearning-probes"
+name = "unlearning-abstention"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
