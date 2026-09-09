@@ -31,7 +31,8 @@ from src.config import BASE_MODEL, checkpoint
 from src.data import matched_sample
 from src.directions import diff_in_means
 from src.intervention import generate_chat
-from src.judge import EPISTEMIC_RUBRIC, IdkMatcher, ensure_ollama_running, run_judges_adjudicated
+from src.judge import (EPISTEMIC_RUBRIC, IdkMatcher, ensure_ollama_running, is_degenerate,
+                       run_judges_adjudicated)
 from src.model_loader import free, load_model
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -91,27 +92,59 @@ def main(layer, n, phase):
 
     if phase in ("all", "judge") and not os.path.exists(labeled):
         ensure_ollama_running()
-        run_judges_adjudicated(raw, labeled, idk01.FAST_JUDGE, idk01.SLOW_JUDGE,
-                               IdkMatcher(), EPISTEMIC_RUBRIC)
+        # Judge only COHERENT rows. Large |c| collapses the decoder (43% of rows
+        # here), and the epistemic rubric scores collapsed text as IGNORANCE via
+        # its "empty hedging" clause — which both inflates abstention and floods
+        # the slow adjudicator with rows whose category is already known.
+        df = pd.read_csv(raw)
+        df["degenerate"] = df["response"].map(is_degenerate)
+        coherent = os.path.join(OUT, "_coherent.csv")
+        df[~df.degenerate].to_csv(coherent, index=False)
+        print(f"judging {int((~df.degenerate).sum())} coherent of {len(df)} rows "
+              f"({df.degenerate.mean():.0%} degenerate, categorised separately)")
+        lab = run_judges_adjudicated(coherent, os.path.join(OUT, "_coherent_labeled.csv"),
+                                     idk01.FAST_JUDGE, idk01.SLOW_JUDGE,
+                                     IdkMatcher(), EPISTEMIC_RUBRIC)
+        merged = df.merge(lab[["prompt", "cls", "ignorant_majority", "judges_agree"]],
+                          on=["prompt", "cls"], how="left")
+        merged["ignorant_majority"] = merged["ignorant_majority"].fillna(False).astype(bool)
+        merged["judges_agree"] = merged["judges_agree"].fillna(True).astype(bool)
+        merged.to_csv(labeled, index=False)
+        os.remove(coherent)
 
     if phase in ("all", "summarize"):
         df = pd.read_csv(labeled)
+        if "degenerate" not in df:
+            df["degenerate"] = df["response"].map(is_degenerate)
+        df["abstain"] = df.ignorant_majority & ~df.degenerate
         df["overlap"] = [fact_overlap(r.response, r.gold) for r in df.itertuples()]
         g = df.groupby(["model", "direction", "mult"]).agg(
-            n=("response", "size"), abstain=("ignorant_majority", "mean"),
-            overlap=("overlap", "mean"), judges_agree=("judges_agree", "mean")).reset_index()
-        piv_a = g.pivot_table(index="model", columns=["direction", "mult"], values="abstain")
-        piv_o = g.pivot_table(index="model", columns=["direction", "mult"], values="overlap")
-        print("\njudged abstention rate:\n", piv_a.round(2).to_string())
-        print("\ngold-overlap screen (read by hand before believing):\n", piv_o.round(2).to_string())
+            n=("response", "size"), abstain=("abstain", "mean"),
+            degenerate=("degenerate", "mean"),
+            judges_agree=("judges_agree", "mean")).reset_index()
+        # among coherent responses only — the rate a reader actually cares about
+        coh = df[~df.degenerate].groupby(["model", "direction", "mult"]).agg(
+            abstain_of_coherent=("abstain", "mean"), overlap=("overlap", "mean")).reset_index()
+        g = g.merge(coh, on=["model", "direction", "mult"], how="left")
+        pv = lambda c: g.pivot_table(index="model", columns=["direction", "mult"], values=c)
+        print("\nabstention rate (all responses):\n", pv("abstain").round(2).to_string())
+        print("\nabstention rate among COHERENT responses:\n", pv("abstain_of_coherent").round(2).to_string())
+        print("\ndegenerate rate:\n", pv("degenerate").round(2).to_string())
+        print("\ngold-overlap screen, coherent only (read by hand):\n", pv("overlap").round(2).to_string())
         g.to_csv(os.path.join(OUT, "rates.csv"), index=False)
         with open(os.path.join(OUT, "summary.json"), "w") as f:
             json.dump({"layer": layer, "n": n, "rates": g.to_dict(orient="records")}, f, indent=2)
         with open(os.path.join(OUT, "summary.md"), "w") as f:
             f.write(f"# 07 — steering audit at layer {layer}, n={n} per condition\n\n"
-                    "Judged abstention rate:\n\n" + piv_a.round(3).to_markdown() +
-                    "\n\nGold-answer content-word overlap (screen only):\n\n" +
-                    piv_o.round(3).to_markdown() + "\n\n" + g.to_markdown(index=False, floatfmt=".3f") + "\n")
+                    "`mult` is c as a multiple of the abstained/answered centroid gap. "
+                    "Degenerate (collapsed) output is counted separately, never as "
+                    "abstention.\n\n## Abstention rate (all responses)\n\n"
+                    + pv("abstain").round(3).to_markdown()
+                    + "\n\n## Abstention among coherent responses\n\n"
+                    + pv("abstain_of_coherent").round(3).to_markdown()
+                    + "\n\n## Degenerate rate\n\n" + pv("degenerate").round(3).to_markdown()
+                    + "\n\n## Gold-answer overlap (screen only, coherent rows)\n\n"
+                    + pv("overlap").round(3).to_markdown() + "\n")
         print(f"wrote {OUT}")
 
 
