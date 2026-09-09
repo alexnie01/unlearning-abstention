@@ -58,6 +58,7 @@ import numpy as np
 import torch
 
 from src.hooks import extract_activations
+from src.prompting import format_chat
 
 
 # ---------------------------------------------------------------------------
@@ -233,6 +234,76 @@ def _score_one(model, tokenizer, device, prompt: str, answer: str) -> float:
         lp = log_probs[0, n_prompt + i - 1, tok]
         total += lp.item()
     return total / n_answer                          # per-token MEAN
+
+
+def _score_one_chat(model, tokenizer, device, question: str, answer: str) -> float:
+    """Chat-template variant of _score_one: the prompt is the full templated
+    turn (src.prompting.format_chat) and the answer follows the assistant
+    header. Neither part gets an extra BOS."""
+    prompt_ids = tokenizer(format_chat(tokenizer, question), return_tensors="pt",
+                           add_special_tokens=False).input_ids.to(device)
+    answer_ids = tokenizer(answer, return_tensors="pt",
+                           add_special_tokens=False).input_ids.to(device)
+    input_ids = torch.cat([prompt_ids, answer_ids], dim=1)
+    with torch.no_grad():
+        logits = model(input_ids=input_ids, attention_mask=torch.ones_like(input_ids)).logits
+    log_probs = torch.log_softmax(logits.float(), dim=-1)
+    n_prompt, n_answer = prompt_ids.shape[1], answer_ids.shape[1]
+    idx = torch.arange(n_prompt, n_prompt + n_answer, device=device)
+    lps = log_probs[0, idx - 1, input_ids[0, idx]]
+    return float(lps.mean())
+
+
+def make_translation_fn(direction: np.ndarray, c: float, start: int | None = None):
+    """In-place fn: h <- h + c * d.
+
+    start=None edits every position. start=k edits positions >= k on a
+    full-sequence pass (the decision position and the answer tokens, leaving
+    the prompt prefix intact) and every position on a single-token pass, which
+    is what KV-cached decoding feeds the hook after prefill."""
+    def fn(hidden: torch.Tensor) -> None:
+        d = torch.as_tensor(direction, dtype=hidden.dtype, device=hidden.device)
+        if start is None or hidden.shape[1] == 1:
+            hidden.add_(c * d)
+        else:
+            hidden[:, start:, :].add_(c * d)
+    return fn
+
+
+def n_prompt_tokens(tokenizer, question: str) -> int:
+    return tokenizer(format_chat(tokenizer, question), add_special_tokens=False,
+                     return_tensors="pt").input_ids.shape[1]
+
+
+def score_dataset_chat(
+    model, tokenizer, device,
+    questions, answers,
+    layer_name=None, direction=None, c=0.0, from_decision=True,
+) -> np.ndarray:
+    """Teacher-forced mean gold log-prob per question on chat-formatted prompts,
+    optionally with h <- h + c*direction at `layer_name` (from the decision
+    position onward if from_decision, else at every position)."""
+    assert len(questions) == len(answers)
+    out = []
+    for q, a in zip(questions, answers):
+        if layer_name is None or direction is None or c == 0.0:
+            out.append(_score_one_chat(model, tokenizer, device, q, a))
+            continue
+        start = n_prompt_tokens(tokenizer, q) - 1 if from_decision else None
+        with _intervention_hook(model, layer_name, make_translation_fn(direction, c, start)):
+            out.append(_score_one_chat(model, tokenizer, device, q, a))
+    return np.array(out)
+
+
+def generate_chat(model, tokenizer, device, question, layer_name=None, direction=None,
+                  c=0.0, from_decision=True, max_new_tokens=80) -> str:
+    """Greedy chat generation, optionally under the same translation hook."""
+    from src.judge import generate_response
+    if layer_name is None or direction is None or c == 0.0:
+        return generate_response(model, tokenizer, question, device, max_new_tokens)
+    start = n_prompt_tokens(tokenizer, question) - 1 if from_decision else None
+    with _intervention_hook(model, layer_name, make_translation_fn(direction, c, start)):
+        return generate_response(model, tokenizer, question, device, max_new_tokens)
 
 
 def score_dataset(
