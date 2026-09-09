@@ -111,13 +111,17 @@ def main():
               f"within-retain {r['IdkDPO_within_retain_auroc']:.3f} | IdkNLL {r['IdkNLL_auroc']:.3f}")
 
     tab = pd.DataFrame(rows)
-    best = int(tab.loc[tab.IdkDPO_auroc.idxmax(), "layer"])
-    # prefer the earliest layer within 0.01 AUROC of the max, for causal work
-    near = tab[tab.IdkDPO_auroc >= tab.IdkDPO_auroc.max() - 0.01]
-    best_early = int(near.layer.min())
+    best_auroc = int(tab.loc[tab.IdkDPO_auroc.idxmax(), "layer"])
+    # Working layer: raw AUROC saturates toward the final layer, where the
+    # residual is already the next-token readout. Among layers that separate
+    # well (>= 0.95), pick the one where the direction best separates BEHAVIOR
+    # with content held fixed (abstained vs answered forget questions).
+    ok = tab[tab.IdkDPO_auroc >= 0.95]
+    best = int(ok.loc[ok.IdkDPO_within_forget_auroc.idxmax(), "layer"]) if len(ok) else best_auroc
     gate = bool(tab.IdkDPO_auroc.max() > 0.9)
     verdict = (f"PASS: epistemic direction separates held-out rows (max CV AUROC "
-               f"{tab.IdkDPO_auroc.max():.3f} at layer {best}; earliest within 0.01: {best_early})"
+               f"{tab.IdkDPO_auroc.max():.3f} at layer {best_auroc}; working layer {best}, "
+               f"within-forget AUROC {tab.loc[best, 'IdkDPO_within_forget_auroc']:.3f})"
                if gate else f"FAIL: max CV AUROC {tab.IdkDPO_auroc.max():.3f} <= 0.9")
     print("\nGATE —", verdict)
 
@@ -125,7 +129,7 @@ def main():
         np.save(os.path.join(OUT, f"epistemic_direction_L{L}.npy"), d)
     tab.to_csv(os.path.join(OUT, "layer_sweep.csv"), index=False)
     with open(os.path.join(OUT, "summary.json"), "w") as f:
-        json.dump({"cells": cells, "best_layer": best, "best_layer_early": best_early,
+        json.dump({"cells": cells, "best_layer": best, "best_layer_by_auroc": best_auroc,
                    "gate_pass": gate, "verdict": verdict, "table": rows}, f, indent=2)
     with open(os.path.join(OUT, "summary.md"), "w") as f:
         f.write("# 02 — epistemic direction layer sweep (IdkDPO)\n\n")
