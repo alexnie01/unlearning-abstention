@@ -8,6 +8,29 @@ unlearning displacement is curved, which would explain why every straight-line
 intervention here and in the exploratory phase restores coherence but not
 knowledge.
 
+## Status (updated 2026-09-09, after the first execution pass)
+
+| Step | State | Outcome |
+|------|-------|---------|
+| B1/B2 → `06_knowledge_probe` | **done** | No method under test occupies knows-and-abstains. IdkNLL does (0.68 recognition, 95% abstention); IdkDPO abstains with recognition *below* the oracle floor. Methods split: NPO/GradDiff/SimNPO keep recognition, RMU/AltPO lose it. |
+| 01 extended to all 7 checkpoints | **done** | None of RMU/AltPO/NPO/SimNPO/GradDiff abstains (0–1%). RMU's apparent 14% was degenerate text scored as "empty hedging"; a degeneracy detector separates it. |
+| (new) `09_recall_audit` | **done** | Recognition ≠ recall. NPO ranks the true answer at base level and states it 3% of the time (base 39%). Unlearning suppresses production, not recognition. |
+| B3 → `08_knowledge_representation` | **done, negative** | Instrument fails calibration: the oracle scores 0.744 vs base 0.789 (span 0.065 vs 0.31 for the output-ranking contrast). The probe tracks answer plausibility, not truth. No per-model claim licensed. |
+| A3 → `07_steering_audit` | running | n=50 per condition with matched-norm controls, replacing 04b's n=3. |
+| A0, A1, A2, A5, A6 | not started | |
+| B0, B4, B5 | not started | B0 is now the gating step for section C. |
+| C0–C3 | not started | |
+
+**What the first pass changed about the remaining plan.** The interesting
+subject is no longer RMU. NPO is: it retains base-level recognition while
+almost never producing the fact, which is the closest thing in this set to
+"knowledge present but not expressed". Any recovery experiment (B0, C3) should
+lead with NPO and GradDiff, not RMU — RMU has no recognition left to recover
+and its output is degenerate 81% of the time, so a null there is
+uninterpretable. B4 (install-then-test) is also more valuable than planned: it
+now has a real reference profile to reproduce (IdkNLL's), not just a
+direction.
+
 ## What PLAN.md did and did not answer
 
 | Level | Verdict | Why |
@@ -41,9 +64,9 @@ positive control. Test knowledge directly instead.
 | Hours | Step | Deliverable | Gate |
 |------:|------|-------------|------|
 | 2 | B0 fix the intervention operator | 04 used translation by −c only, and one random vector once (04, ±1×gap, layer 12). Run three operators at layers 8 and 12 — (i) ablation h − (h·d)d, (ii) projection replacement: set each row's projection on d to the answered-retain centroid's value, (iii) translation — each against three controls: 20 random unit vectors (report the distribution, not one draw), the random-split direction, the content direction. Random-vector ablation is a floor only (one dimension of 2048 is ~nothing); the split and content controls are the matched ones. Score gold and IDK log-prob; generate and judge 30 prompts per condition. | Validate on IdkDPO first: at least one operator must raise IdkDPO's gold log-prob and reduce its judged abstention beyond the split control. If none does, translation-style removal is dead on this setup and B1–B4 carry the causal question alone. Only then run RMU / AltPO. |
-| 2 | B1 discrimination probe | TOFU ships `forget10_perturbed.json` (wrong-answer paraphrases per question). For every model, score log-prob of the true answer vs each perturbed answer under the chat template; report the fraction of questions where the true answer ranks first, and the truth ratio. This is a knowledge test that does not require the model to *say* the answer. | Base ≈ 1.0, oracle ≈ chance. This calibrates the probe. |
+| 2 | B1 discrimination probe (**done**) | TOFU ships `forget10_perturbed.json` (wrong-answer paraphrases per question). For every model, score log-prob of the true answer vs each perturbed answer under the chat template; report the fraction of questions where the true answer ranks first, and the truth ratio. This is a knowledge test that does not require the model to *say* the answer. | Base ≈ 1.0, oracle ≈ chance. This calibrates the probe. |
 | 1 | B2 read the 2×2 | Per method: discrimination (B1) × abstention rate (01). Knows-but-abstains = high discrimination, high abstention. Destroyed = low discrimination. IdkDPO/IdkNLL are the positive controls: if THEY sit at chance discrimination, the "still knows" premise is false even for trained abstention on this setup and the project's question dissolves. | This is the experiment that answers the question. Every cell is interpretable. |
-| 1.5 | B3 linear probe for knowledge | Train a probe on base activations to predict true-vs-perturbed (not forget-vs-retain), test it on each unlearned model's activations at layers 8 and 12. Separability of the answer-correctness signal is a second, representational, knowledge measure. | Probe transfers on base held-out; then per-method transfer is the reading. |
+| 1.5 | B3 linear probe for knowledge (**done — failed calibration**) | Trained on true-vs-perturbed answer activations. The oracle scores within 0.065 of base, so the probe reads plausibility rather than truth and licenses no per-model claim. A usable retry needs a contrast the oracle provably fails — e.g. probe retain-set vs forget-set facts *within the base model*, confirm the oracle is at chance, and only then transfer. | Oracle must sit near chance BEFORE any method is read off it. |
 | 1 | B4 install-then-test | On the base model under +4×gap (abstaining), rerun B1. If discrimination survives while generation abstains, the direction is a clean abstention gate over intact knowledge — the reference profile a "learned abstention" method would have to match. | — |
 | 0.5 | B5 write-up | Final 2×2 figure (discrimination vs abstention, one point per model, base and oracle as corners). | — |
 
