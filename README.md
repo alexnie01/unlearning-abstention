@@ -116,8 +116,12 @@ objective-specific rather than data-specific.
 **04 — the direction is not a causal abstention switch.** _(filled in below
 once 04b completes)_
 
-**05 — the confabulation wall is not a 1B artifact.** _(filled in below once
-judging completes)_
+**05 — the confabulation wall is not a 1B artifact.** On 50 forget10
+questions, the retain90 oracle abstains 0/50 at 1B and 0/50 at 8B (judge
+agreement 0.98–1.00); both invent a schema-consistent biography for every
+never-seen author ("Hsiao Yun-Hwa's father is a professional makeup artist").
+Natural epistemic refusal does not appear with scale on this fine-tuning
+setup; the trained IDK checkpoints remain the only source of the behavior.
 
 ## Setup
 

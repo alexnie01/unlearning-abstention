@@ -1,0 +1,36 @@
+{
+  "table": [
+    {
+      "model": "oracle_1B",
+      "cls": "forget",
+      "n": 50,
+      "abstain_judge_majority": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 1.0
+    },
+    {
+      "model": "oracle_1B",
+      "cls": "retain",
+      "n": 50,
+      "abstain_judge_majority": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 1.0
+    },
+    {
+      "model": "oracle_8B",
+      "cls": "forget",
+      "n": 50,
+      "abstain_judge_majority": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 0.98
+    },
+    {
+      "model": "oracle_8B",
+      "cls": "retain",
+      "n": 50,
+      "abstain_judge_majority": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 1.0
+    }
+  ]
+}
