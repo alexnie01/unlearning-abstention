@@ -14,8 +14,9 @@ exploratory phase is reused here; where a prior observation motivates a design
 choice it is cited, not copied.
 
 See [`BACKGROUND.md`](BACKGROUND.md) for what the exploratory phase found and
-why this project's specific test follows from it, and [`PLAN.md`](PLAN.md) for
-the hour-by-hour experiment schedule and gates.
+why this project's specific test follows from it, [`PLAN.md`](PLAN.md) for
+the experiment schedule and gates that were run, and [`PLAN2.md`](PLAN2.md)
+for what remains.
 
 ## Question
 
@@ -60,12 +61,12 @@ confabulates, an epistemic direction extracted from IdkDPO separates
 abstention from answering out of sample, causally makes the *base* model say
 "I don't know" at layer 8, and the two abstention finetunes move forget
 representations the same way (cos 0.43–0.64). Against that instrument, no
-unlearning method behaves like learned abstention: only AltPO's forget-specific
-shift resembles the abstention finetunes' (cos ≈ 0.2–0.3 with both), and
-subtracting the direction restores answers in nothing — not AltPO, not RMU,
-not even IdkDPO. Whatever RMU/NPO/AltPO/SimNPO/GradDiff do to forget-set
-facts, it is not a removable epistemic-refusal gate. The oracle's
-confabulation wall persists at 8B.
+unlearning method's forget-specific shift resembles learned abstention except
+AltPO's, moderately (cos ≈ 0.2–0.3 with both anchors). The causal test is
+inconclusive: subtracting the direction restores answers in nothing — not
+AltPO, not RMU, and not IdkDPO either, so the removal instrument is not
+validated. The oracle's confabulation wall persists at 8B. Next steps,
+including a direct knowledge test, are in [`PLAN2.md`](PLAN2.md).
 
 Full tables and figures live under `results/<experiment>/summary.md`. All
 numbers use 100 forget10 and 100 retain90 questions (seeded, author-stratified),
@@ -150,13 +151,15 @@ control):
 
 ![magnitude sweep](results/04b_magnitude_sweep/sweep.png)
 
-So the same direction that makes a knowing model say "I don't know" cannot,
-when subtracted, make an unlearned model answer. With a working positive
-control, that asymmetry is the result: RMU, AltPO (and, by 03, NPO, SimNPO,
-GradDiff) do not suppress forget-set facts through a removable
-epistemic-refusal gate. The one method whose forget-specific shift
-resembles the abstention finetunes' (AltPO) still cannot be steered back to
-its answers.
+Read carefully, this is **not** a negative on the gate hypothesis. The
+removal test fails on IdkDPO too — the positive control — so failing on
+RMU/AltPO is uninformative, and IdkDPO's own baseline gold log-prob (−5.1 vs
+base −0.14) says its answers are suppressed as well, not merely withheld.
+What 04 establishes is that the direction is real (it installs abstention in
+a knowing model at layer 8) and that translation along it is not a way to
+undo abstention, trained or otherwise. The causal question is reopened in
+[`PLAN2.md`](PLAN2.md), which tests knowledge directly (true-vs-perturbed
+answer discrimination) instead of through a removable linear gate.
 
 **05 — the confabulation wall is not a 1B artifact.** On 50 forget10
 questions, the retain90 oracle abstains 0/50 at 1B and 0/50 at 8B (judge
