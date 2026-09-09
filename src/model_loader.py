@@ -1,5 +1,17 @@
+import gc
+
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
+
+
+def free():
+    """Reclaim accelerator memory. The caller must `del` its own model/tokenizer
+    references first; this only forces collection and clears the cache."""
+    gc.collect()
+    if torch.backends.mps.is_available():
+        torch.mps.empty_cache()
+    elif torch.cuda.is_available():
+        torch.cuda.empty_cache()
 
 def get_device() -> torch.device:
     if torch.backends.mps.is_available():
