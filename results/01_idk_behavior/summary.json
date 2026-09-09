@@ -1,0 +1,79 @@
+{
+  "table": [
+    {
+      "model": "base",
+      "cls": "forget",
+      "n": 100,
+      "abstain_judge_majority": 0.01,
+      "abstain_regex": 0.0,
+      "judge_agreement": 0.98,
+      "regex_vs_majority_agreement": 0.99
+    },
+    {
+      "model": "base",
+      "cls": "retain",
+      "n": 100,
+      "abstain_judge_majority": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 1.0,
+      "regex_vs_majority_agreement": 1.0
+    },
+    {
+      "model": "IdkDPO",
+      "cls": "forget",
+      "n": 100,
+      "abstain_judge_majority": 0.41,
+      "abstain_regex": 0.38,
+      "judge_agreement": 0.69,
+      "regex_vs_majority_agreement": 0.91
+    },
+    {
+      "model": "IdkDPO",
+      "cls": "retain",
+      "n": 100,
+      "abstain_judge_majority": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 1.0,
+      "regex_vs_majority_agreement": 1.0
+    },
+    {
+      "model": "IdkNLL",
+      "cls": "forget",
+      "n": 100,
+      "abstain_judge_majority": 0.95,
+      "abstain_regex": 0.96,
+      "judge_agreement": 0.63,
+      "regex_vs_majority_agreement": 0.99
+    },
+    {
+      "model": "IdkNLL",
+      "cls": "retain",
+      "n": 100,
+      "abstain_judge_majority": 0.02,
+      "abstain_regex": 0.02,
+      "judge_agreement": 0.99,
+      "regex_vs_majority_agreement": 1.0
+    }
+  ],
+  "gate": {
+    "IdkDPO": {
+      "forget_abstain": 0.41,
+      "retain_abstain": 0.0,
+      "passes": true
+    },
+    "IdkNLL": {
+      "forget_abstain": 0.95,
+      "retain_abstain": 0.02,
+      "passes": true
+    },
+    "base": {
+      "forget_abstain": 0.01,
+      "retain_abstain": 0.0
+    }
+  },
+  "verdict": "PASS: ignorance cell populated by IdkDPO, IdkNLL",
+  "judges": {
+    "fast": "llama3.2",
+    "slow_adjudicator": "deepseek-r1:latest"
+  }
+}
