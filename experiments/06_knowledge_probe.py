@@ -38,10 +38,11 @@ from src.data import sample_split
 from src.judge import is_degenerate
 from src.knowledge import load_perturbed, score_discrimination, summarize_discrimination
 from src.model_loader import free, load_model
+from src.stats import result_dir, wilson_ci
 
 transformers.logging.set_verbosity_error()
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-OUT = os.path.join(ROOT, "results", "06_knowledge_probe")
+OUT = result_dir("06_knowledge_probe")
 MODELS = {"base": BASE_MODEL, "oracle": RETAIN, **CHECKPOINTS}
 ORDER = ["base", "oracle"] + POSITIVE_CONTROLS + METHODS_UNDER_TEST
 
@@ -64,7 +65,9 @@ def main(n, from_cache=False):
             for set_name, data in sets.items():
                 res = score_discrimination(model, tok, dev, data)
                 s = summarize_discrimination(res)
-                rows.append({"model": label, "set": set_name, **s})
+                lo, hi = wilson_ci(int(res["rank1"].sum()), len(res["rank1"]))
+                rows.append({"model": label, "set": set_name, **s,
+                             "rank1_lo": lo, "rank1_hi": hi})
                 for i, r in enumerate(data):
                     per_q.append({"model": label, "set": set_name, "question": r["question"],
                                   "true_lp": float(res["true_lp"][i]),
@@ -85,7 +88,7 @@ def main(n, from_cache=False):
     fg = tab[tab.set == "forget"].set_index("model")
     abst = {}
     for label in ORDER:
-        p = os.path.join(ROOT, "results", "01_idk_behavior", f"responses_{label}_labeled.csv")
+        p = os.path.join(result_dir("01_idk_behavior"), f"responses_{label}_labeled.csv")
         if os.path.exists(p):
             df = pd.read_csv(p)
             f = df[df.cls == "forget"]

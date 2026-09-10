@@ -27,10 +27,11 @@ from src.data import matched_sample
 from src.judge import (EPISTEMIC_RUBRIC, IdkMatcher, ensure_ollama_running, generate_and_save,
                        is_degenerate, run_judges_adjudicated)
 from src.model_loader import free, load_model
+from src.stats import result_dir, wilson_ci
 
 transformers.logging.set_verbosity_error()
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "results", "01_idk_behavior")
+OUT = result_dir("01_idk_behavior")
 # llama3.2 + regex label every row; deepseek-r1 (~15 s/row) only adjudicates
 # disagreements and a 10% audit sample.
 FAST_JUDGE, SLOW_JUDGE = "llama3.2", "deepseek-r1:latest"
@@ -97,6 +98,8 @@ def phase_summarize():
                 "degenerate": float(sub["degenerate"].mean()),
                 "abstain_regex": float(sub["ignorant_regex"].mean()),
                 "judge_agreement": float(sub["judges_agree"].mean()),
+                **dict(zip(("abstain_lo", "abstain_hi"),
+                           wilson_ci(int((sub["ignorant_majority"] & ~sub["degenerate"]).sum()), len(sub)))),
             })
     tab = pd.DataFrame(rows)
     print("\n" + tab.to_string(index=False, float_format=lambda x: f"{x:.2f}"))

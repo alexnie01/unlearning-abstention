@@ -45,19 +45,20 @@ from src.activations import cached_activations
 from src.config import BASE_MODEL, CHECKPOINTS, METHODS_UNDER_TEST, POSITIVE_CONTROLS
 from src.data import matched_sample
 from src.directions import diff_in_means, random_split_direction, unit
+from src.stats import result_dir
 from src.refusal_alignment import random_floor_cosine
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-OUT = os.path.join(ROOT, "results", "03_alignment")
-ACTS = os.path.join(ROOT, "results", "activations")
-DIRS = os.path.join(ROOT, "results", "02_epistemic_direction")
-N = 100
+OUT = result_dir("03_alignment")
+ACTS = result_dir("activations")
+DIRS = result_dir("02_epistemic_direction")
+N = int(os.environ.get("N_QUESTIONS", 100))
 ORDER = POSITIVE_CONTROLS + METHODS_UNDER_TEST
 MARGIN = 1.5
 
 
 def masks_for(label):
-    df = pd.read_csv(os.path.join(ROOT, "results", "01_idk_behavior", f"responses_{label}_labeled.csv"))
+    df = pd.read_csv(os.path.join(result_dir("01_idk_behavior"), f"responses_{label}_labeled.csv"))
     return {c: df[df.cls == c].ignorant_majority.to_numpy(dtype=bool) for c in ("forget", "retain")}
 
 

@@ -32,10 +32,11 @@ from tqdm import tqdm
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.config import METHODS_UNDER_TEST, POSITIVE_CONTROLS
 from src.judge import CORRECTNESS_RUBRIC, ensure_ollama_running, is_degenerate, judge_one
+from src.stats import result_dir, wilson_ci
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-OUT = os.path.join(ROOT, "results", "09_recall_audit")
-B01 = os.path.join(ROOT, "results", "01_idk_behavior")
+OUT = result_dir("09_recall_audit")
+B01 = result_dir("01_idk_behavior")
 ORDER = ["base"] + POSITIVE_CONTROLS + METHODS_UNDER_TEST
 JUDGE = "llama3.2"
 
@@ -73,8 +74,12 @@ def main():
     # A model that abstains cannot also recall; report recall among ATTEMPTS too.
     attempts = df[~df.abstained & ~df.degenerate]
     g["recall_when_attempted"] = attempts.groupby("model").correct.mean()
+    ci = {m: wilson_ci(int(df[df.model == m].correct.sum()), int((df.model == m).sum()))
+          for m in g.index}
+    g["recall_lo"] = [ci[m][0] for m in g.index]
+    g["recall_hi"] = [ci[m][1] for m in g.index]
     k06 = {}
-    p06 = os.path.join(ROOT, "results", "06_knowledge_probe", "summary.json")
+    p06 = os.path.join(result_dir("06_knowledge_probe"), "summary.json")
     if os.path.exists(p06):
         with open(p06) as f:
             k06 = {r["model"]: r["rank1_acc"] for r in json.load(f)["table"] if r["set"] == "forget"}
