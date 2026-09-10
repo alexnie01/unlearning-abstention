@@ -215,6 +215,18 @@ facts, and the retain90 oracle, which never saw them.
 Every model scores 0.71–0.77 on retain90, so all of this variation is
 forget-specific rather than general damage. Three readings follow.
 
+> **Confound, found after the first pass.** Across the five methods under
+> test, recognition is almost perfectly predicted by how far the method moved
+> the model: r(log‖offset‖, recognition) = −0.91 (NPO 0.98/0.68, GradDiff
+> 1.26/0.65, SimNPO 2.64/0.54, AltPO 2.70/0.28, RMU 11.9/0.15). So the split
+> below may be "some methods barely changed the model" rather than two
+> mechanisms, and it is **not established** until the magnitude-matched
+> comparison in [`PLAN2.md`](PLAN2.md) (R2) is run. What survives regardless:
+> IdkNLL moved as far as AltPO and SimNPO (‖offset‖ 4.03) yet kept base-level
+> recognition where the trend predicts ≈0.3, so the trade-off is escapable;
+> and NPO has the *smallest* displacement of any method with near-zero recall,
+> so its recognition/recall gap is not a magnitude artifact.
+
 *The knows-but-abstains cell exists and no unlearning method is in it.*
 IdkNLL abstains on 95% of exactly the questions where it still ranks the truth
 at the base model's rate. That is the profile "unlearning is learned

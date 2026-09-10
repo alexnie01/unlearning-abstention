@@ -21,10 +21,61 @@ knowledge.
 | B0, B4, B5 | not started | B0 is now the gating step for section C. |
 | C0–C3 | not started | |
 
-**Where this leaves the project.** The behavioural and knowledge questions are
-answered; what is unanswered is whether NPO's retained recognition can be
-turned back into production. That is now the single most interesting open
-question, and B4/B0 are the way to it.
+**Where this leaves the project.** The behavioural question is answered. The
+knowledge question is answered *subject to a confound found afterwards* (see
+the Revision below): recognition retention across the five methods is almost
+perfectly predicted by how far each method moved the model, so the
+"two mechanisms" reading in the first-pass README is not established. What is
+unanswered, and most interesting, is whether NPO's retained recognition can be
+turned back into production.
+
+---
+
+# Revision (2026-09-09, written after the first execution pass)
+
+Three things force a revision. (1) A magnitude confound: over the five methods
+under test, r(log‖offset‖, recognition) = **−0.91** — NPO 0.98/0.68, GradDiff
+1.26/0.65, SimNPO 2.64/0.54, AltPO 2.70/0.28, RMU 11.9/0.15 — so "some methods
+keep knowledge and some destroy it" may be nothing more than "some methods
+barely moved the model". IdkNLL is the informative exception (‖offset‖ 4.03,
+recognition 0.68, where the trend predicts ≈0.3). (2) `08` failed its own
+calibration, and the fault was the contrast, not the probe. (3) Everything
+rests on n=100, one checkpoint per method, one seed.
+
+Note what survives the confound: NPO has the *smallest* displacement of any
+method and near-zero recall (0.03, against GradDiff's 0.20 at a larger norm);
+r(log‖offset‖, recall) is only −0.47. Recall suppression is not a magnitude
+artefact, which is why R7 leads on NPO.
+
+| # | Step | Hours | Deliverable | Gate |
+|---|------|------:|-------------|------|
+| R1 | **Full-scale rerun at n=400** | 8–9 (mostly unattended) | Every behavioural and knowledge number at the full forget10 set and a 400-row retain sample, in `results/*_n400/`: generation for 8 checkpoints (~2 h), llama3.2 + phrase matcher on all rows (~1.3 h), deepseek-r1 adjudication (~1.3 h — measured, not guessed: disagreements concentrate in IdkDPO/IdkNLL and degenerate rows are filtered first), `06` discrimination (~2.3 h), `09` recall (~40 min), all-layer activations for `02`/`03` (~40 min). Report every rate with a bootstrap CI. | Headline numbers hold: no method under test abstains; IdkNLL keeps base-level recognition while abstaining. Any rate whose CI crosses a 2×2 threshold is reported as ambiguous rather than assigned a cell. |
+| R2 | **Magnitude-matched comparison** | 3 | The fix for the confound. open-unlearning publishes 40–54 hyperparameter variants per method; extract forget/retain activations for ~6 variants per method (forward passes only, no training) and plot recognition and recall *against* ‖offset‖ as a curve per method. Compare curves, not points. | Curves separate at matched ‖offset‖, or they collapse onto one line. If they collapse, the honest finding is "knowledge loss is a function of displacement, and only abstention training escapes it" — which is a cleaner result than the current framing, not a weaker one. |
+| R3 | **Direction provenance** | 2 | `02`'s epistemic direction is built from IdkDPO, which `06` now shows is the *suppression*-type abstainer (recognition 0.26, below the oracle floor). So the direction may encode suppression, and `07`'s steered text ("not provided", "not specified") is consistent with either reading. Rebuild it three ways — IdkDPO forget-abstained vs retain-answered (current), the same on IdkNLL, and the within-forget contrast (abstained vs answered on the same authors, AUROC 0.81 at layer 12) — and report pairwise cosines plus each one's steering effect in `07`. | The three agree (then the current results stand as stated) or they do not (then `03` and `07` are re-read against whichever direction actually installs abstention without suppressing recognition). |
+| R4 | **Rebuild `08` around a calibrated contrast** | 2 | The failure was the labels: "true vs perturbed answer" is separable by plausibility, which the oracle does nearly as well as base (0.744 vs 0.789). Replace it with a contrast the oracle provably fails — probe forget-facts vs retain-facts *within the base model*, or true-vs-perturbed restricted to questions the oracle answers at chance — and verify the oracle sits near 0.5 before any method is read off it. | **Calibration is the gate and comes first.** Oracle at chance, base high. If that fails again, drop the representational route rather than reporting it. |
+| R5 | **Give recall real dynamic range** | 1 | Base recall is 0.39 only because many TOFU questions are open-ended ("what themes does X explore"). Tag the subset with a crisp factual target (name, profession, place, title — roughly 40% of forget10) and report recall on it separately. | Base recall on the crisp subset ≳0.7. If it does not rise, the judge, not the questions, is the limit — fix the rubric before drawing recall conclusions. |
+| R6 | **Validate the heuristics** | 1 | Hand-label ~100 rows spanning natural, steered and degenerate text; score the degeneracy detector (arbitrary 0.5 distinct-word threshold), the llama3.2 judge (76% agreement with deepseek on steered text vs 95–100% on natural), and the phrase matcher against those labels. | Detector and judge ≥90% against hand labels on natural text. Below that, every rate derived from them carries the measured error rate in the README. |
+| R7 | **B6 — can NPO be made to talk?** (carried forward, still the top experiment) | 1.5 | NPO keeps base-level recognition and produces the fact 3% of the time against base's 39%, with the smallest displacement of any method — so this is a genuine dissociation, not a magnitude artefact. Sweep every operator (translation along −epistemic, along base-minus-NPO, projection replacement) over magnitude at layers 8/12, scored by `09`'s recall judge. | Any intervention raising NPO's recall above what the same perturbation does to the base model. A null is the strongest form of this project's negative. |
+| R8 | **B4 — install-then-test** (carried forward) | 1 | Steer base to +2×gap at layer 8 (66% abstention, 0% degeneracy per `07`) and rerun the `06` probe. | Recognition survives → steering reproduces IdkNLL's profile synthetically. It collapses → even an installed gate is not a clean gate. |
+
+**Supersedes.** R1 replaces A1; R3 extends A4; R4 replaces B3; R6 absorbs A0
+and the judging half of A1. Section C (arc vs chord) is **deferred
+indefinitely**: it was motivated by explaining why linear interventions fail on
+RMU, and RMU turns out to have no recognition left to recover and degenerate
+output 81% of the time, so a null there is uninterpretable. Revisit only if R7
+finds NPO recoverable and the recovery is non-linear.
+
+**Order.** R1 overnight (it is unattended and everything else reads its
+outputs). R7 and R8 next — both are ~1 h and answer live questions. Then R2,
+which is the one that decides how the knowledge result is framed. R3–R6 before
+any write-up.
+
+**A caution carried forward.** `03`'s cosines do not predict `06`'s outcomes
+(r = −0.13 between IdkNLL-shift alignment and recognition across the five
+methods). Either the mean-shift cosine is the wrong geometric summary or
+geometry at this granularity carries no functional information. Say so
+explicitly in the write-up rather than presenting both sections as if they
+corroborate each other.
 
 **What the first pass changed about the remaining plan.** The interesting
 subject is no longer RMU. NPO is: it retains base-level recognition while
