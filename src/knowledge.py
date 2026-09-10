@@ -19,7 +19,7 @@ Metrics per question (all from length-normalised log-probs):
 import numpy as np
 from datasets import load_dataset
 
-from src.intervention import score_dataset_chat
+from src.intervention import score_dataset_chat, score_pairs_chat
 
 
 def load_perturbed(split: str, indices=None) -> list[dict]:
@@ -37,14 +37,21 @@ def score_discrimination(model, tokenizer, device, rows, layer_name=None,
     hook (same signature as score_dataset_chat) so an intervened model can be
     asked the same question."""
     qs = [r["question"] for r in rows]
-    true_lp = score_dataset_chat(model, tokenizer, device, qs, [r["true"] for r in rows],
-                                 layer_name, direction, c)
     n_pert = len(rows[0]["perturbed"])
-    pert_lp = np.stack([
-        score_dataset_chat(model, tokenizer, device, qs, [r["perturbed"][k] for r in rows],
-                           layer_name, direction, c)
-        for k in range(n_pert)
-    ], axis=1)                                    # (n_questions, n_perturbed)
+    if direction is None or c == 0.0:
+        # No hook: score every candidate in one batched sweep.
+        pairs = [(r["question"], a) for r in rows for a in [r["true"]] + list(r["perturbed"])]
+        flat = score_pairs_chat(model, tokenizer, device, pairs)
+        grid = flat.reshape(len(rows), n_pert + 1)
+        true_lp, pert_lp = grid[:, 0], grid[:, 1:]
+    else:
+        true_lp = score_dataset_chat(model, tokenizer, device, qs, [r["true"] for r in rows],
+                                     layer_name, direction, c)
+        pert_lp = np.stack([
+            score_dataset_chat(model, tokenizer, device, qs, [r["perturbed"][k] for r in rows],
+                               layer_name, direction, c)
+            for k in range(n_pert)
+        ], axis=1)                                # (n_questions, n_perturbed)
 
     rank1 = true_lp[:, None] > pert_lp
     truth_ratio = np.exp(pert_lp).mean(axis=1) / np.exp(true_lp)

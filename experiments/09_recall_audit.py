@@ -22,6 +22,7 @@ Usage:  uv run python experiments/09_recall_audit.py
 import json
 import os
 import sys
+from concurrent.futures import ThreadPoolExecutor
 
 import matplotlib
 matplotlib.use("Agg")
@@ -31,7 +32,8 @@ from tqdm import tqdm
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.config import METHODS_UNDER_TEST, POSITIVE_CONTROLS
-from src.judge import CORRECTNESS_RUBRIC, ensure_ollama_running, is_degenerate, judge_one
+from src.judge import (CORRECTNESS_RUBRIC, JUDGE_WORKERS, ensure_ollama_running, is_degenerate,
+                       judge_one)
 from src.stats import result_dir, wilson_ci
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
@@ -56,11 +58,15 @@ def main():
                 continue
             d = pd.read_csv(p)
             d = d[d.cls == "forget"]
-            for r in tqdm(d.itertuples(), total=len(d), desc=f"recall [{label}]"):
-                rows.append({"model": label, "prompt": r.prompt, "response": r.response,
-                             "gold": r.gold, "abstained": bool(r.ignorant_majority),
-                             "correct": judge_one(r.prompt, r.response, JUDGE,
-                                                  CORRECTNESS_RUBRIC, gold=r.gold)})
+            recs = list(d.itertuples())
+            with ThreadPoolExecutor(JUDGE_WORKERS) as ex:
+                correct = list(tqdm(
+                    ex.map(lambda r: judge_one(r.prompt, r.response, JUDGE,
+                                               CORRECTNESS_RUBRIC, gold=r.gold), recs),
+                    total=len(recs), desc=f"recall [{label}]"))
+            rows += [{"model": label, "prompt": r.prompt, "response": r.response,
+                      "gold": r.gold, "abstained": bool(r.ignorant_majority), "correct": ok}
+                     for r, ok in zip(recs, correct)]
             print(f"{label}: done", flush=True)
         df = pd.DataFrame(rows)
         df.to_csv(path, index=False)

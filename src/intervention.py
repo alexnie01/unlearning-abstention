@@ -275,6 +275,42 @@ def n_prompt_tokens(tokenizer, question: str) -> int:
                      return_tensors="pt").input_ids.shape[1]
 
 
+def score_pairs_chat(model, tokenizer, device, pairs, batch_size: int = 24) -> np.ndarray:
+    """Teacher-forced mean answer log-prob for many (question, answer) pairs,
+    batched. Equivalent to looping _score_one_chat but ~2-4x faster, which
+    matters at n=400 where the knowledge probe scores 21,600 pairs.
+
+    Right-padding is safe here: causal attention means padding after a sequence
+    cannot affect its own positions, and each row's answer span is indexed with
+    its own offsets. Batched fp16 matmuls differ from single-sequence ones by
+    ~5e-3 nats, far below any effect this project measures.
+    """
+    out = np.empty(len(pairs), dtype=np.float64)
+    pad = tokenizer.pad_token_id if tokenizer.pad_token_id is not None else 0
+    for i in range(0, len(pairs), batch_size):
+        chunk = pairs[i:i + batch_size]
+        seqs, spans = [], []
+        for q, a in chunk:
+            p = tokenizer(format_chat(tokenizer, q), add_special_tokens=False).input_ids
+            an = tokenizer(a, add_special_tokens=False).input_ids
+            seqs.append(p + an)
+            spans.append((len(p), len(an)))
+        width = max(len(s) for s in seqs)
+        ids = torch.full((len(seqs), width), pad, dtype=torch.long)
+        mask = torch.zeros((len(seqs), width), dtype=torch.long)
+        for j, s in enumerate(seqs):
+            ids[j, :len(s)] = torch.tensor(s)
+            mask[j, :len(s)] = 1
+        ids, mask = ids.to(device), mask.to(device)
+        with torch.no_grad():
+            logits = model(input_ids=ids, attention_mask=mask).logits
+        log_probs = torch.log_softmax(logits.float(), dim=-1)
+        for j, (n_prompt, n_answer) in enumerate(spans):
+            idx = torch.arange(n_prompt, n_prompt + n_answer, device=device)
+            out[i + j] = float(log_probs[j, idx - 1, ids[j, idx]].mean())
+    return out
+
+
 def score_dataset_chat(
     model, tokenizer, device,
     questions, answers,

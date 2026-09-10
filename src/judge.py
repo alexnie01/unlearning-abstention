@@ -18,6 +18,7 @@ import os
 import re
 import time
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
 import pandas as pd
@@ -28,6 +29,7 @@ from tqdm import tqdm
 from src.prompting import encode_chat
 
 OLLAMA_URL = "http://localhost:11434"
+JUDGE_WORKERS = int(os.environ.get("JUDGE_WORKERS", 6))
 
 
 # ---------------------------------------------------------------------------
@@ -277,8 +279,13 @@ def run_judges_adjudicated(in_csv: str, out_csv: str, fast_judge: str, slow_judg
     judge's verdict. `judges_agree` is False on adjudicated rows."""
     df = pd.read_csv(in_csv)
     fast_col, slow_col = _col(label, fast_judge), _col(label, slow_judge)
-    df[fast_col] = [judge_one(r["prompt"], r["response"], fast_judge, rubric)
-                    for _, r in tqdm(df.iterrows(), total=len(df), desc=f"Judging [{fast_judge}]")]
+    # Ollama serialises generation, but overlapping request latency still buys
+    # ~1.5x on the fast pass, which is thousands of rows at n=400.
+    with ThreadPoolExecutor(JUDGE_WORKERS) as ex:
+        df[fast_col] = list(tqdm(
+            ex.map(lambda r: judge_one(r[1]["prompt"], r[1]["response"], fast_judge, rubric),
+                   df.iterrows()),
+            total=len(df), desc=f"Judging [{fast_judge}]"))
     df[f"{label}_regex"] = df["response"].map(lambda s: bool(regex.search(str(s))))
     cheap_agree = df[fast_col] == df[f"{label}_regex"]
     audit = pd.Series(np.random.default_rng(seed).random(len(df)) < audit_frac, index=df.index)
