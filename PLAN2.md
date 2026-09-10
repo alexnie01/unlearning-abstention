@@ -16,10 +16,15 @@ knowledge.
 | 01 extended to all 7 checkpoints | **done** | None of RMU/AltPO/NPO/SimNPO/GradDiff abstains (0–1%). RMU's apparent 14% was degenerate text scored as "empty hedging"; a degeneracy detector separates it. |
 | (new) `09_recall_audit` | **done** | Recognition ≠ recall. NPO ranks the true answer at base level and states it 3% of the time (base 39%). Unlearning suppresses production, not recognition. |
 | B3 → `08_knowledge_representation` | **done, negative** | Instrument fails calibration: the oracle scores 0.744 vs base 0.789 (span 0.065 vs 0.31 for the output-ranking contrast). The probe tracks answer plausibility, not truth. No per-model claim licensed. |
-| A3 → `07_steering_audit` | running | n=50 per condition with matched-norm controls, replacing 04b's n=3. |
+| A3 → `07_steering_audit` | **done** | The direction installs abstention specifically: base 0% → 66% at +2×gap with 0% degeneracy, vs 0% abstention / 86% degeneracy for a matched-norm content shift. −c recovers nothing. Judge agreement on steered text is 76%. |
 | A0, A1, A2, A5, A6 | not started | |
 | B0, B4, B5 | not started | B0 is now the gating step for section C. |
 | C0–C3 | not started | |
+
+**Where this leaves the project.** The behavioural and knowledge questions are
+answered; what is unanswered is whether NPO's retained recognition can be
+turned back into production. That is now the single most interesting open
+question, and B4/B0 are the way to it.
 
 **What the first pass changed about the remaining plan.** The interesting
 subject is no longer RMU. NPO is: it retains base-level recognition while
