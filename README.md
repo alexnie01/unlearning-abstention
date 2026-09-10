@@ -70,7 +70,9 @@ NPO, GradDiff and SimNPO keep the answer ranking and confabulate a different
 fact (NPO ranks the truth as well as the base model while stating it 3% of the
 time, against base's 39%); RMU and AltPO lose the ranking too, falling below
 the never-trained oracle's floor. A direction extracted from abstention behaviour does causally install
-abstention in the base model at layer 8, so the instrument works — but
+abstention in the base model — steered at layer 8 it declines on 66% of
+questions it otherwise answers correctly, with no degeneracy, where a
+matched-norm control produces only gibberish — so the instrument works. But
 subtracting it restores answers in nothing, not even in the abstention
 checkpoints. Details in [`PLAN2.md`](PLAN2.md); the confabulation wall
 persists at 8B.
@@ -148,22 +150,36 @@ decision position onward (`04_causal`, `04b_magnitude_sweep`; c in multiples
 of the abstained/answered centroid gap, content direction as matched-norm
 control):
 
-- *Toward abstention (+c), layer 8.* At +4×gap the **base** model — which
-  answers every forget question verbatim — abstains in text ("There is no
-  information provided for such a nonexistent person"); its IDK log-prob rises
-  −6.5 → −3.3 while the matched content shift drives it to −8.9. AltPO does
-  the same ("There is no record of such a person", −5.4 → −2.9), and IdkDPO
-  says "I don't have any information on that topic." The direction is a
-  causal abstention direction at layer 8. At layer 12 (02's working layer) it
-  is not: +c only degenerates output ("never never never").
+- *Toward abstention (+c), layer 8 — audited at n=50 per condition in 07.*
+  The **base** model answers every one of these questions correctly unsteered
+  (gold overlap 0.76, 0% abstention). At +2×gap along the epistemic direction
+  it abstains on **66%** of them with **zero** degenerate output — "The
+  author's name is not provided", "The profession of Hsiao Yun-Hwa's father is
+  not specified". At +4×gap, 62% with 14% degeneracy. The matched-norm content
+  control at ±4×gap produces **0% abstention and 86% collapsed text**, so the
+  effect is specific to the direction and is not "large perturbation breaks the
+  model". AltPO steers the same way (0% → 32% at +2, 50% at +4); RMU is
+  degenerate at 56–92% everywhere and so uninterpretable. At layer 12 (02's
+  working layer) +c only degenerates output ("never never never").
+
+  | base model, layer 8 | abstains | degenerate | gold overlap |
+  |---|---:|---:|---:|
+  | unsteered | 0% | 0% | 0.76 |
+  | +2×gap, epistemic | **66%** | **0%** | 0.21 |
+  | +4×gap, epistemic | 62% | 14% | 0.01 |
+  | +4×gap, content (matched norm) | 0% | 86% | 0.15 |
+
+  Judge agreement on steered text is 76%, against 95–100% on natural text, so
+  treat these rates as softer than 01's.
 - *Toward answering (−c), any layer or magnitude.* No unlearned model recovers
   its answers. IdkDPO's gold log-prob moves −5.3 → −4.6 at best (−2×gap) and
   its text becomes incoherent by −4×; AltPO moves −3.35 → −3.13; RMU's gold
   log-prob stays at −9 to −10 at every magnitude and its text stays
-  gibberish, while at +4×gap even RMU emits "There is no information
-  whatsoever" (IDK −10.5 → −4.3). Where −c helps at all it lifts gold *and*
-  IDK log-prob together — the coherence effect the exploratory phase
-  documented, not a gate opening.
+  gibberish. In the n=50 audit, −c *lowers* the base model's gold overlap
+  (0.76 → 0.52 at −2, 0.19 at −4) and lifts AltPO's and IdkDPO's by at most
+  0.03–0.05 on a screen metric that counts schema words as hits. Where −c
+  helps at all it lifts gold *and* IDK log-prob together — the coherence
+  effect the exploratory phase documented, not a gate opening.
 
 ![magnitude sweep](results/04b_magnitude_sweep/sweep.png)
 
