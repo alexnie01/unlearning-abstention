@@ -67,8 +67,13 @@ def main():
                     ex.map(lambda r: judge_one(r.prompt, r.response, JUDGE,
                                                CORRECTNESS_RUBRIC, gold=r.gold), recs),
                     total=len(recs), desc=f"recall [{label}]"))
+            # An unjudged row (capped sampling) has ignorant_majority = NaN, and
+            # bool(NaN) is True — fall back to the phrase matcher, which ran on
+            # every row, rather than silently scoring it as an abstention.
             rows += [{"model": label, "prompt": r.prompt, "response": r.response,
-                      "gold": r.gold, "abstained": bool(r.ignorant_majority), "correct": ok}
+                      "gold": r.gold, "correct": ok,
+                      "abstained": bool(r.ignorant_majority)
+                      if pd.notna(r.ignorant_majority) else bool(r.ignorant_regex)}
                      for r, ok in zip(recs, correct)]
             print(f"{label}: done", flush=True)
         df = pd.DataFrame(rows)

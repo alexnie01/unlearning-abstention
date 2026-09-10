@@ -1,0 +1,217 @@
+{
+  "table": [
+    {
+      "model": "base",
+      "cls": "forget",
+      "n": 400,
+      "abstain": 0.0075,
+      "abstain_raw": 0.0075,
+      "degenerate": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 0.9875,
+      "abstain_lo": 0.0025538429629852373,
+      "abstain_hi": 0.02181610802770022
+    },
+    {
+      "model": "base",
+      "cls": "retain",
+      "n": 400,
+      "abstain": 0.0,
+      "abstain_raw": 0.0,
+      "degenerate": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 0.9975,
+      "abstain_lo": 0.0,
+      "abstain_hi": 0.009512640599680667
+    },
+    {
+      "model": "IdkDPO",
+      "cls": "forget",
+      "n": 400,
+      "abstain": 0.3975,
+      "abstain_raw": 0.3975,
+      "degenerate": 0.005,
+      "abstain_regex": 0.3625,
+      "judge_agreement": 0.745,
+      "abstain_lo": 0.3507344059122796,
+      "abstain_hi": 0.446215685410655
+    },
+    {
+      "model": "IdkDPO",
+      "cls": "retain",
+      "n": 400,
+      "abstain": 0.0,
+      "abstain_raw": 0.0,
+      "degenerate": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 1.0,
+      "abstain_lo": 0.0,
+      "abstain_hi": 0.009512640599680667
+    },
+    {
+      "model": "IdkNLL",
+      "cls": "forget",
+      "n": 400,
+      "abstain": 0.9425,
+      "abstain_raw": 0.9425,
+      "degenerate": 0.0,
+      "abstain_regex": 0.9675,
+      "judge_agreement": 0.65,
+      "abstain_lo": 0.9151985747985072,
+      "abstain_hi": 0.9613827382707756
+    },
+    {
+      "model": "IdkNLL",
+      "cls": "retain",
+      "n": 400,
+      "abstain": 0.0325,
+      "abstain_raw": 0.0325,
+      "degenerate": 0.0,
+      "abstain_regex": 0.0325,
+      "judge_agreement": 0.99,
+      "abstain_lo": 0.019089659086961887,
+      "abstain_hi": 0.054804659873739545
+    },
+    {
+      "model": "RMU",
+      "cls": "forget",
+      "n": 400,
+      "abstain": 0.025,
+      "abstain_raw": 0.025,
+      "degenerate": 0.7425,
+      "abstain_regex": 0.0,
+      "judge_agreement": 0.965,
+      "abstain_lo": 0.013634943739762435,
+      "abstain_hi": 0.045402064829934204
+    },
+    {
+      "model": "RMU",
+      "cls": "retain",
+      "n": 400,
+      "abstain": 0.0,
+      "abstain_raw": 0.0,
+      "degenerate": 0.1275,
+      "abstain_regex": 0.0,
+      "judge_agreement": 0.995,
+      "abstain_lo": 0.0,
+      "abstain_hi": 0.009512640599680667
+    },
+    {
+      "model": "AltPO",
+      "cls": "forget",
+      "n": 100,
+      "abstain": 0.0,
+      "abstain_raw": 0.0,
+      "degenerate": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 0.99,
+      "abstain_lo": 0.0,
+      "abstain_hi": 0.03699480747600191
+    },
+    {
+      "model": "AltPO",
+      "cls": "retain",
+      "n": 100,
+      "abstain": 0.0,
+      "abstain_raw": 0.0,
+      "degenerate": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 1.0,
+      "abstain_lo": 0.0,
+      "abstain_hi": 0.03699480747600191
+    },
+    {
+      "model": "NPO",
+      "cls": "forget",
+      "n": 100,
+      "abstain": 0.0,
+      "abstain_raw": 0.0,
+      "degenerate": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 0.99,
+      "abstain_lo": 0.0,
+      "abstain_hi": 0.03699480747600191
+    },
+    {
+      "model": "NPO",
+      "cls": "retain",
+      "n": 100,
+      "abstain": 0.0,
+      "abstain_raw": 0.0,
+      "degenerate": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 0.99,
+      "abstain_lo": 0.0,
+      "abstain_hi": 0.03699480747600191
+    },
+    {
+      "model": "SimNPO",
+      "cls": "forget",
+      "n": 100,
+      "abstain": 0.0,
+      "abstain_raw": 0.0,
+      "degenerate": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 1.0,
+      "abstain_lo": 0.0,
+      "abstain_hi": 0.03699480747600191
+    },
+    {
+      "model": "SimNPO",
+      "cls": "retain",
+      "n": 100,
+      "abstain": 0.0,
+      "abstain_raw": 0.0,
+      "degenerate": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 1.0,
+      "abstain_lo": 0.0,
+      "abstain_hi": 0.03699480747600191
+    },
+    {
+      "model": "GradDiff",
+      "cls": "forget",
+      "n": 100,
+      "abstain": 0.01,
+      "abstain_raw": 0.01,
+      "degenerate": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 0.99,
+      "abstain_lo": 0.0017673865655472645,
+      "abstain_hi": 0.0544875247609346
+    },
+    {
+      "model": "GradDiff",
+      "cls": "retain",
+      "n": 100,
+      "abstain": 0.0,
+      "abstain_raw": 0.0,
+      "degenerate": 0.0,
+      "abstain_regex": 0.0,
+      "judge_agreement": 1.0,
+      "abstain_lo": 0.0,
+      "abstain_hi": 0.03699480747600191
+    }
+  ],
+  "gate": {
+    "IdkDPO": {
+      "forget_abstain": 0.3975,
+      "retain_abstain": 0.0,
+      "passes": true
+    },
+    "IdkNLL": {
+      "forget_abstain": 0.9425,
+      "retain_abstain": 0.0325,
+      "passes": true
+    },
+    "base": {
+      "forget_abstain": 0.0075,
+      "retain_abstain": 0.0
+    }
+  },
+  "verdict": "PASS: ignorance cell populated by IdkDPO, IdkNLL",
+  "judges": {
+    "fast": "llama3.2",
+    "slow_adjudicator": "deepseek-r1:latest"
+  }
+}

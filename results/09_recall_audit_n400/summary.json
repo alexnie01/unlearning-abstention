@@ -1,0 +1,90 @@
+[
+  {
+    "model": "base",
+    "n": 200,
+    "recall": 0.38,
+    "abstain": 0.01,
+    "degenerate": 0.0,
+    "recall_when_attempted": 0.37373737373737376,
+    "recall_lo": 0.3155889366123922,
+    "recall_hi": 0.4489341048080049,
+    "recognition": 0.735
+  },
+  {
+    "model": "IdkDPO",
+    "n": 200,
+    "recall": 0.005,
+    "abstain": 0.405,
+    "degenerate": 0.0,
+    "recall_when_attempted": 0.0,
+    "recall_lo": 0.0008831459893662054,
+    "recall_hi": 0.02777439986977148,
+    "recognition": 0.2975
+  },
+  {
+    "model": "IdkNLL",
+    "n": 200,
+    "recall": 0.005,
+    "abstain": 0.93,
+    "degenerate": 0.0,
+    "recall_when_attempted": 0.07142857142857142,
+    "recall_lo": 0.0008831459893662054,
+    "recall_hi": 0.02777439986977148,
+    "recognition": 0.7
+  },
+  {
+    "model": "RMU",
+    "n": 200,
+    "recall": 0.025,
+    "abstain": 0.025,
+    "degenerate": 0.715,
+    "recall_when_attempted": 0.019230769230769232,
+    "recall_lo": 0.010724561470787711,
+    "recall_hi": 0.05717914415161715,
+    "recognition": 0.2025
+  },
+  {
+    "model": "AltPO",
+    "n": 200,
+    "recall": 0.01,
+    "abstain": 0.0,
+    "degenerate": 0.005,
+    "recall_when_attempted": 0.010050251256281407,
+    "recall_lo": 0.0027466006037749346,
+    "recall_hi": 0.03572248519617954,
+    "recognition": 0.3175
+  },
+  {
+    "model": "NPO",
+    "n": 200,
+    "recall": 0.04,
+    "abstain": 0.0,
+    "degenerate": 0.0,
+    "recall_when_attempted": 0.04,
+    "recall_lo": 0.02040538715065641,
+    "recall_hi": 0.07693293829419882,
+    "recognition": 0.695
+  },
+  {
+    "model": "SimNPO",
+    "n": 200,
+    "recall": 0.04,
+    "abstain": 0.0,
+    "degenerate": 0.0,
+    "recall_when_attempted": 0.04,
+    "recall_lo": 0.02040538715065641,
+    "recall_hi": 0.07693293829419882,
+    "recognition": 0.55
+  },
+  {
+    "model": "GradDiff",
+    "n": 200,
+    "recall": 0.21,
+    "abstain": 0.005,
+    "degenerate": 0.0,
+    "recall_when_attempted": 0.21105527638190955,
+    "recall_lo": 0.15928329527863416,
+    "recall_hi": 0.271647388153992,
+    "recognition": 0.6775
+  }
+]
