@@ -317,6 +317,53 @@ def score_pairs_chat(model, tokenizer, device, pairs, batch_size: int = 24) -> n
     return out
 
 
+def score_pairs_chat_intervened(model, tokenizer, device, pairs, layer_name, direction, c,
+                                batch_size: int = 24) -> np.ndarray:
+    """score_pairs_chat under h <- h + c*direction applied from each row's own
+    decision position onward.
+
+    Rows in a batch have different prompt lengths, so the edit is applied with a
+    per-row position mask rather than a shared slice — that is what makes the
+    intervened sweep batchable at all (one row at a time is ~30x slower).
+    """
+    if direction is None or c == 0.0:
+        return score_pairs_chat(model, tokenizer, device, pairs, batch_size)
+    out = np.empty(len(pairs), dtype=np.float64)
+    pad = tokenizer.pad_token_id if tokenizer.pad_token_id is not None else 0
+    for i in range(0, len(pairs), batch_size):
+        chunk = pairs[i:i + batch_size]
+        seqs, spans = [], []
+        for q, a in chunk:
+            p = tokenizer(format_chat(tokenizer, q), add_special_tokens=False).input_ids
+            an = tokenizer(a, add_special_tokens=False).input_ids
+            seqs.append(p + an)
+            spans.append((len(p), len(an)))
+        width = max(len(s) for s in seqs)
+        ids = torch.full((len(seqs), width), pad, dtype=torch.long)
+        mask = torch.zeros((len(seqs), width), dtype=torch.long)
+        for j, s in enumerate(seqs):
+            ids[j, :len(s)] = torch.tensor(s)
+            mask[j, :len(s)] = 1
+        ids, mask = ids.to(device), mask.to(device)
+        pos = torch.arange(width, device=device).unsqueeze(0)
+        starts = torch.tensor([sp[0] - 1 for sp in spans], device=device).unsqueeze(1)
+        edit = (pos >= starts).to(torch.float32).unsqueeze(-1)   # (B, L, 1)
+
+        def fn(hidden, _edit=edit):
+            d = torch.as_tensor(direction, dtype=hidden.dtype, device=hidden.device)
+            hidden.add_((c * _edit.to(hidden.dtype)) * d)
+
+        with _intervention_hook(model, layer_name, fn), torch.no_grad():
+            logits = model(input_ids=ids, attention_mask=mask).logits
+            for j, (n_prompt, n_answer) in enumerate(spans):
+                sl = logits[j, n_prompt - 1:n_prompt + n_answer - 1].float()
+                lp = torch.log_softmax(sl, dim=-1)
+                tgt = ids[j, n_prompt:n_prompt + n_answer]
+                out[i + j] = float(lp.gather(1, tgt.unsqueeze(1)).mean())
+            del logits
+    return out
+
+
 def score_dataset_chat(
     model, tokenizer, device,
     questions, answers,
