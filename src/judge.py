@@ -272,24 +272,37 @@ def run_judges(in_csv: str, out_csv: str, judges: list[str],
 
 def run_judges_adjudicated(in_csv: str, out_csv: str, fast_judge: str, slow_judge: str,
                            regex, rubric: str = EPISTEMIC_RUBRIC, label: str = "ignorant",
-                           audit_frac: float = 0.1, seed: int = 0) -> pd.DataFrame:
+                           audit_frac: float = 0.1, seed: int = 0,
+                           audit_max: int = 50, skip_degenerate: bool = True) -> pd.DataFrame:
     """Two cheap labels on every row (fast LLM judge + regex); the slow judge
     is called only where they disagree, plus a random audit sample. Majority
     is then: fast label where the two cheap labels agree, else the slow
     judge's verdict. `judges_agree` is False on adjudicated rows."""
     df = pd.read_csv(in_csv)
     fast_col, slow_col = _col(label, fast_judge), _col(label, slow_judge)
-    # Ollama serialises generation, but overlapping request latency still buys
-    # ~1.5x on the fast pass, which is thousands of rows at n=400.
-    with ThreadPoolExecutor(JUDGE_WORKERS) as ex:
-        df[fast_col] = list(tqdm(
-            ex.map(lambda r: judge_one(r[1]["prompt"], r[1]["response"], fast_judge, rubric),
-                   df.iterrows()),
-            total=len(df), desc=f"Judging [{fast_judge}]"))
     df[f"{label}_regex"] = df["response"].map(lambda s: bool(regex.search(str(s))))
-    cheap_agree = df[fast_col] == df[f"{label}_regex"]
-    audit = pd.Series(np.random.default_rng(seed).random(len(df)) < audit_frac, index=df.index)
-    need_slow = (~cheap_agree) | audit
+    df["degenerate"] = df["response"].map(is_degenerate)
+    # Collapsed output is neither abstention nor an answer, and the epistemic
+    # rubric mislabels it as IGNORANCE ("empty hedging"). Categorise it here
+    # instead of paying a judge to mis-score it — RMU alone is 74% degenerate.
+    judged = ~df["degenerate"] if skip_degenerate else pd.Series(True, index=df.index)
+    rows = df[judged]
+    with ThreadPoolExecutor(JUDGE_WORKERS) as ex:
+        fast = list(tqdm(
+            ex.map(lambda r: judge_one(r[1]["prompt"], r[1]["response"], fast_judge, rubric),
+                   rows.iterrows()),
+            total=len(rows), desc=f"Judging [{fast_judge}]"))
+    df[fast_col] = False
+    df.loc[judged, fast_col] = fast
+    cheap_agree = (df[fast_col] == df[f"{label}_regex"]) | ~judged
+    # The audit verifies the cheap consensus; its precision does not need to
+    # scale with the dataset (50 concordant rows already bound the error rate
+    # below ~7%), so cap it rather than paying 10% of every row at ~13 s each.
+    n_audit = min(int(audit_frac * judged.sum()), audit_max)
+    pool = df.index[cheap_agree & judged]
+    picked = np.random.default_rng(seed).choice(pool, size=min(n_audit, len(pool)), replace=False)
+    audit = pd.Series(df.index.isin(picked), index=df.index)
+    need_slow = ((~cheap_agree) & judged) | audit
     df[slow_col] = None
     for i in tqdm(df.index[need_slow], desc=f"Adjudicating [{slow_judge}]"):
         df.at[i, slow_col] = judge_one(df.at[i, "prompt"], df.at[i, "response"], slow_judge, rubric)
