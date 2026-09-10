@@ -304,10 +304,16 @@ def score_pairs_chat(model, tokenizer, device, pairs, batch_size: int = 24) -> n
         ids, mask = ids.to(device), mask.to(device)
         with torch.no_grad():
             logits = model(input_ids=ids, attention_mask=mask).logits
-        log_probs = torch.log_softmax(logits.float(), dim=-1)
-        for j, (n_prompt, n_answer) in enumerate(spans):
-            idx = torch.arange(n_prompt, n_prompt + n_answer, device=device)
-            out[i + j] = float(log_probs[j, idx - 1, ids[j, idx]].mean())
+            # Softmax ONLY over each row's answer positions. Over the full
+            # (batch, seq, 128k vocab) tensor this is 5-8 GB per batch at TOFU's
+            # sequence lengths, which thrashes MPS and runs slower than batch 1;
+            # the answer span is ~30 positions, so the slice is ~20 MB.
+            for j, (n_prompt, n_answer) in enumerate(spans):
+                sl = logits[j, n_prompt - 1:n_prompt + n_answer - 1].float()
+                lp = torch.log_softmax(sl, dim=-1)
+                tgt = ids[j, n_prompt:n_prompt + n_answer]
+                out[i + j] = float(lp.gather(1, tgt.unsqueeze(1)).mean())
+            del logits
     return out
 
 

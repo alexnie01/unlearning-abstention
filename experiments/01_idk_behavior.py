@@ -73,13 +73,38 @@ def phase_generate(n, max_new_tokens):
 
 
 def phase_judge():
+    """JUDGE_SAMPLE caps how many rows per class go to the LLM judges. The
+    phrase matcher still runs on every row, so a capped model reports a judged
+    rate over the sample and a matcher rate over all of it — enough to confirm
+    a rate that the matcher already puts at 0/400, without paying ~30 min of
+    LLM calls per model to reconfirm a zero."""
     ensure_ollama_running()
+    cap = int(os.environ.get("JUDGE_SAMPLE", 0))
     for label in MODELS:
         if os.path.exists(labeled_csv(label)):
             print(f"[skip] {labeled_csv(label)} exists")
             continue
-        run_judges_adjudicated(resp_csv(label), labeled_csv(label), FAST_JUDGE, SLOW_JUDGE,
-                               IDK_RE, EPISTEMIC_RUBRIC)
+        if not cap:
+            run_judges_adjudicated(resp_csv(label), labeled_csv(label), FAST_JUDGE, SLOW_JUDGE,
+                                   IDK_RE, EPISTEMIC_RUBRIC)
+            continue
+        full = pd.read_csv(resp_csv(label))
+        pick = (full.groupby("cls", group_keys=False)
+                .apply(lambda g: g.sample(min(cap, len(g)), random_state=0)))
+        tmp = labeled_csv(label) + ".sample"
+        pick.to_csv(tmp, index=False)
+        lab = run_judges_adjudicated(tmp, tmp + ".labeled", FAST_JUDGE, SLOW_JUDGE,
+                                     IDK_RE, EPISTEMIC_RUBRIC)
+        cols = ["ignorant_majority", "judges_agree", f"{'ignorant'}_regex", "degenerate"]
+        merged = full.merge(lab[["prompt", "cls"] + [c for c in cols if c in lab]],
+                            on=["prompt", "cls"], how="left")
+        merged["judged"] = merged["ignorant_majority"].notna()
+        merged["ignorant_regex"] = merged["response"].map(lambda s: bool(IDK_RE(s)))
+        merged["degenerate"] = merged["response"].map(is_degenerate)
+        merged.to_csv(labeled_csv(label), index=False)
+        os.remove(tmp); os.remove(tmp + ".labeled")
+        print(f"{label}: judged {int(merged.judged.sum())} of {len(merged)} rows "
+              f"(cap {cap}/class); matcher ran on all", flush=True)
 
 
 def phase_summarize():
@@ -87,6 +112,8 @@ def phase_summarize():
     for label in MODELS:
         df = pd.read_csv(labeled_csv(label))
         df["degenerate"] = df["response"].map(is_degenerate)
+        if "judged" in df:                      # capped run: rates over judged rows only
+            df = df[df["judged"].fillna(False).astype(bool)]
         for cls, sub in df.groupby("cls"):
             rows.append({
                 "model": label, "cls": cls, "n": len(sub),
