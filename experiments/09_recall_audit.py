@@ -58,6 +58,9 @@ def main():
                 continue
             d = pd.read_csv(p)
             d = d[d.cls == "forget"]
+            cap = int(os.environ.get("RECALL_SAMPLE", 0))
+            if cap and len(d) > cap:
+                d = d.sample(cap, random_state=0)
             recs = list(d.itertuples())
             with ThreadPoolExecutor(JUDGE_WORKERS) as ex:
                 correct = list(tqdm(

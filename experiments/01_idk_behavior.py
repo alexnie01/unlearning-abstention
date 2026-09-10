@@ -89,8 +89,10 @@ def phase_judge():
                                    IDK_RE, EPISTEMIC_RUBRIC)
             continue
         full = pd.read_csv(resp_csv(label))
-        pick = (full.groupby("cls", group_keys=False)
-                .apply(lambda g: g.sample(min(cap, len(g)), random_state=0)))
+        # groupby().sample() keeps every column; groupby().apply() drops the
+        # grouping column in current pandas.
+        per_class = min(cap, int(full.groupby("cls").size().min()))
+        pick = full.groupby("cls", group_keys=False).sample(n=per_class, random_state=0)
         tmp = labeled_csv(label) + ".sample"
         pick.to_csv(tmp, index=False)
         lab = run_judges_adjudicated(tmp, tmp + ".labeled", FAST_JUDGE, SLOW_JUDGE,
