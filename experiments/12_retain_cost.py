@@ -23,6 +23,7 @@ Reuses 01's saved retain-set generations, so this is a judging pass only.
 Usage:  uv run python experiments/12_retain_cost.py
 """
 import json
+import math
 import os
 import sys
 from concurrent.futures import ThreadPoolExecutor
@@ -92,13 +93,29 @@ def main(cap):
         g["selectivity"] = g["retain_recall"] - g["forget_recall"]
     print("\n" + g.round(3).to_string())
 
+    # Two-proportion z-test against base. Comparing a model's CI to base's point
+    # estimate ignores base's own uncertainty and overstates significance; at
+    # n=100 per model the honest bar is higher than it looks.
     base = float(g.loc["base", "retain_recall"]) if "base" in g.index else float("nan")
-    damaged = [m for m in g.index if m != "base" and g.loc[m, "hi"] < base]
-    verdict = (f"Retain-set recall is below the base model's {base:.2f} for: "
-               + ", ".join(f"{m} ({g.loc[m, 'retain_recall']:.2f})" for m in damaged)
-               if damaged else
-               f"No checkpoint's retain recall falls significantly below base ({base:.2f}); "
-               "forget-set loss is not general damage.")
+    nb = int(g.loc["base", "n"])
+    zs = {}
+    for m in g.index:
+        if m == "base":
+            continue
+        p, nm = float(g.loc[m, "retain_recall"]), int(g.loc[m, "n"])
+        se = math.sqrt(base * (1 - base) / nb + p * (1 - p) / nm)
+        zs[m] = (base - p) / se if se > 0 else float("nan")
+    g["z_vs_base"] = [zs.get(m, float("nan")) for m in g.index]
+    # Bonferroni over the checkpoints compared: |z| > 2.9 for ~7 tests at 0.05
+    strong = [m for m, z in zs.items() if z > 2.9]
+    weak = [m for m, z in zs.items() if 1.96 < z <= 2.9]
+    verdict = (
+        (f"Retain recall is decisively below base ({base:.2f}) for: "
+         + ", ".join(f"{m} ({g.loc[m, 'retain_recall']:.2f}, z={zs[m]:.1f})" for m in strong)
+         if strong else f"No checkpoint is decisively below base ({base:.2f})")
+        + (". Suggestive but not surviving correction for multiple comparisons: "
+           + ", ".join(f"{m} ({g.loc[m, 'retain_recall']:.2f}, z={zs[m]:.1f})" for m in weak)
+           if weak else ". No borderline cases."))
     print("\n=>", verdict)
 
     g.reset_index().to_csv(os.path.join(OUT, "summary.csv"), index=False)

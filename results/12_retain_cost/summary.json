@@ -1,0 +1,93 @@
+{
+  "verdict": "Retain recall is decisively below base (0.36) for: RMU (0.03, z=6.5). Suggestive but not surviving correction for multiple comparisons: IdkNLL (0.23, z=2.0), AltPO (0.23, z=2.0)",
+  "rows": [
+    {
+      "model": "base",
+      "n": 100,
+      "retain_recall": 0.36,
+      "degenerate": 0.0,
+      "lo": 0.2727107459049014,
+      "hi": 0.45764780018837914,
+      "forget_recall": 0.39,
+      "selectivity": -0.030000000000000027,
+      "z_vs_base": NaN
+    },
+    {
+      "model": "IdkDPO",
+      "n": 100,
+      "retain_recall": 0.25,
+      "degenerate": 0.0,
+      "lo": 0.1754509400372426,
+      "hi": 0.3430464637007583,
+      "forget_recall": 0.01,
+      "selectivity": 0.24,
+      "z_vs_base": 1.7015961708335374
+    },
+    {
+      "model": "IdkNLL",
+      "n": 100,
+      "retain_recall": 0.23,
+      "degenerate": 0.0,
+      "lo": 0.15843154746876406,
+      "hi": 0.32154564856827694,
+      "forget_recall": 0.01,
+      "selectivity": 0.22,
+      "z_vs_base": 2.0364771699686885
+    },
+    {
+      "model": "RMU",
+      "n": 100,
+      "retain_recall": 0.03,
+      "degenerate": 0.16,
+      "lo": 0.010254338223414816,
+      "hi": 0.08452078080402699,
+      "forget_recall": 0.01,
+      "selectivity": 0.019999999999999997,
+      "z_vs_base": 6.478064365153771
+    },
+    {
+      "model": "AltPO",
+      "n": 100,
+      "retain_recall": 0.23,
+      "degenerate": 0.0,
+      "lo": 0.15843154746876406,
+      "hi": 0.32154564856827694,
+      "forget_recall": 0.0,
+      "selectivity": 0.23,
+      "z_vs_base": 2.0364771699686885
+    },
+    {
+      "model": "NPO",
+      "n": 100,
+      "retain_recall": 0.43,
+      "degenerate": 0.0,
+      "lo": 0.3373313900052838,
+      "hi": 0.5278478830413564,
+      "forget_recall": 0.03,
+      "selectivity": 0.4,
+      "z_vs_base": -1.015132610358908
+    },
+    {
+      "model": "SimNPO",
+      "n": 100,
+      "retain_recall": 0.42,
+      "degenerate": 0.0,
+      "lo": 0.327982249185113,
+      "hi": 0.5179369200110473,
+      "forget_recall": 0.07,
+      "selectivity": 0.35,
+      "z_vs_base": -0.87148934066119
+    },
+    {
+      "model": "GradDiff",
+      "n": 100,
+      "retain_recall": 0.38,
+      "degenerate": 0.0,
+      "lo": 0.2909744920013438,
+      "hi": 0.47790426179289663,
+      "forget_recall": 0.2,
+      "selectivity": 0.18,
+      "z_vs_base": -0.2929793676545241
+    }
+  ]
+}

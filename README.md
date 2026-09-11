@@ -51,11 +51,12 @@ construction and serve as the **positive control** this test was missing:
 | Methods under test | RMU, AltPO, NPO, SimNPO, GradDiff (forget10, 1B) |
 | Scale check | `open-unlearning/tofu_Llama-3.1-8B-Instruct_retain90` |
 
-`open-unlearning` publishes no unlearned 3B or 8B checkpoints (checked
-2026-09-09), so the scale check is limited to the oracle.
-[`CLOUD_TRAIN.md`](CLOUD_TRAIN.md) is the recipe for training the seven
-8B counterparts on one rented GPU (≈ $25–50); everything in this repo then
-runs on them locally, read-only.
+`open-unlearning` publishes no unlearned 8B checkpoints, so the scale check
+here is limited to the oracle. Others do: JoaoBoer and jialicheng host 8B
+forget10 checkpoints for most methods — but **not** IdkDPO, IdkNLL or AltPO,
+which exist nowhere at 8B. The positive controls are precisely the gap, so a
+scale replication has to train those three first.
+[`CLOUD_TRAIN.md`](CLOUD_TRAIN.md) has the recipe and costs.
 
 ## Results
 
@@ -94,17 +95,19 @@ questions, none of RMU, AltPO, NPO, SimNPO or GradDiff says "I don't know"
 above a 0.05 upper bound, while the purpose-built IdkNLL says it 94% of the
 time *while still ranking the true answer above five surface-matched false ones
 at the base model's rate* (0.70 vs 0.73). That cell — knows and abstains — is
-occupied only by a checkpoint trained to occupy it. The five methods split two
-ways instead: NPO, GradDiff and SimNPO keep the answer ranking and confabulate
-a different fact (NPO ranks the truth as well as the base model while stating
-it 4% of the time, against base's 38%); RMU and AltPO lose the ranking too,
-falling below the never-trained oracle's floor of 0.43. A direction extracted
-from abstention behaviour does causally install abstention in the base model —
-steered at layer 8 it declines on 66% of questions it otherwise answers
-correctly, with no degeneracy, where a matched-norm control produces only
-gibberish — so the instrument works. But subtracting it restores answers in
-nothing, not even in the abstention checkpoints. Details in
-[`PLAN2.md`](PLAN2.md); the confabulation wall persists at 8B.
+occupied only by checkpoints trained to occupy it, and robustly so: six of
+eight Idk hyperparameter variants land in it. The five methods split two ways
+instead: NPO, GradDiff and SimNPO keep the answer ranking and confabulate a
+different fact (NPO ranks the truth as well as the base model while stating it
+4% of the time, against base's 38%); RMU and AltPO lose the ranking too,
+falling below the never-trained oracle's floor of 0.43. That split is a
+property of the method, not of how far it moved the model — 28 checkpoints
+spanning four hyperparameter settings per method separate into distinct curves
+at matched displacement. A direction extracted from abstention behaviour does
+causally install abstention in the base model (0% → 66% at layer 8, where a
+matched-norm control gives 0% and only gibberish), but subtracting it restores
+answers in nothing, not even in the abstention checkpoints. The confabulation
+wall persists at 8B.
 
 Full tables and figures live under `results/<experiment>/summary.md`. Prompts
 are seeded and author-stratified, use the chat template with a fixed system
@@ -170,7 +173,7 @@ lacked, and it passes. Against both anchors:
 ![alignment](results/03_alignment/alignment_bars.png)
 ![by layer](results/03_alignment/alignment_by_layer.png)
 
-Caveat: the IdkNLL-derived *direction* is 0.77 content (it abstains on every
+Caveat: read 03 alongside 14 — the anchors are less distinct than they looked. The IdkNLL-derived *direction* is also 0.77 content (it abstains on every
 forget row), and a label-permutation null shows the IdkDPO direction's
 alignment does not depend on *which* forget rows abstained — the instrument
 is "how an abstention finetune moves forget representations relative to
@@ -241,16 +244,7 @@ readings follow.
 Judging each model's own generations against the gold fact (a fluent wrong
 biography counts as NO):
 
-| model | recall | recognition | abstains |
-|-------|-------:|------------:|---------:|
-| base | 0.39 | 0.69 | 1% |
-| GradDiff | 0.20 | 0.65 | 0% |
-| SimNPO | 0.07 | 0.54 | 0% |
-| NPO | 0.03 | 0.68 | 0% |
-| IdkNLL | 0.01 | 0.68 | 95% |
-| IdkDPO / RMU / AltPO | ≤0.01 | 0.26 / 0.15 / 0.28 | 41% / 1% / 0% |
-
-Base recall is 0.39, not 1.0 — many TOFU questions are open-ended ("what themes
+See the headline table for recall at n=400. Base recall is 0.38, not 1.0 — many TOFU questions are open-ended ("what themes
 does X explore"), so treat 0.39 as this metric's ceiling. NPO is the sharp
 case: it ranks the true answer as well as the base model (0.68) and states it
 3% of the time, versus base's 39%. So "knows but doesn't say" is real for
@@ -258,6 +252,57 @@ NPO — but what it says instead is a confident wrong fact, not "I don't know."
 Unlearning here suppresses *production* while leaving *recognition* intact,
 which is a different phenomenon from learned abstention and one that a
 generation-only evaluation would score as successful forgetting.
+
+**11 — the mechanism split is a property of the method, not of displacement.**
+The obvious objection to the table above is that recognition simply tracks how
+far each method moved the model: across the five *published* checkpoints,
+r(log‖shift‖, recognition) = −0.91. Training four hyperparameter variants per
+method — 28 checkpoints, each downloaded, measured and deleted — shows that
+overstated the confound. Displacement does predict recognition within most
+methods (pooled r = −0.79 over 28), but the curves do not coincide: at matched
+displacement ‖shift‖ ≈ 1.2, IdkNLL scores 0.69, NPO 0.62, RMU 0.52 and AltPO
+0.37. Residuals from the pooled trend run from IdkNLL +0.12 to AltPO −0.11.
+The published checkpoints happened to release the Idk models at small
+displacements and the aggressive methods at large ones, which manufactured most
+of the −0.91.
+
+![displacement](results/11_magnitude_matched/recognition_vs_displacement.png)
+
+**12 — the retain-set cost, and RMU's real story.** Unlearning is only
+interesting if it spares what it was meant to keep. Retain *recognition* is
+intact everywhere (0.75–0.78). Retain *recall* is not:
+
+| model | retain recall | forget recall | z vs base |
+|-------|--------------:|--------------:|----------:|
+| NPO | 0.43 | 0.03 | — |
+| SimNPO | 0.42 | 0.07 | — |
+| GradDiff | 0.38 | 0.20 | — |
+| *base* | *0.36* | *0.39* | — |
+| IdkDPO | 0.25 | 0.01 | 1.7 |
+| IdkNLL | 0.23 | 0.01 | 2.0 |
+| AltPO | 0.23 | 0.00 | 2.0 |
+| **RMU** | **0.03** | 0.01 | **6.5** |
+
+Only RMU is decisively damaged (z = 6.5); the three at 0.23–0.25 are suggestive
+(z ≈ 2) but do not survive correction for seven comparisons at n=100, and are
+reported as such rather than as findings. RMU's result reframes it: it does not
+forget selectively, it loses the ability to state *any* of these facts while
+retaining the ability to rank them (retain recognition 0.76). Its low
+forget-set recognition should therefore not be read as targeted knowledge
+removal.
+
+![retain cost](results/12_retain_cost/retain_vs_forget.png)
+
+**14 — a correction: the IdkDPO/IdkNLL "dissociation" is one checkpoint.**
+Earlier drafts of this README described IdkNLL as abstaining cleanly and IdkDPO
+as abstaining by suppressing knowledge. Measuring abstention across the same
+hyperparameter variants kills that reading. Six of eight Idk variants combine
+abstention with recognition above the ignorance floor: IdkNLL does it at every
+setting (abstain 0.42–0.98, recognition 0.695–0.730), and IdkDPO does it at
+three of four (abstain 0.98–0.99, recognition 0.39–0.61). The *published*
+IdkDPO checkpoint — abstain 0.50, recognition 0.28 — is the outlier, not the
+family. Abstention training generally preserves recognition; the
+knows-and-abstains cell is easy to reach, and no unlearning method reaches it.
 
 **08 — an instrument that failed, recorded as such.** To test whether the
 low-recognition models still *represent* correctness internally, I trained a
