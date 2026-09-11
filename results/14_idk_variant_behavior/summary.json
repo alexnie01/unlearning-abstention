@@ -1,0 +1,102 @@
+{
+  "n": 200,
+  "verdict": "6 of 8 Idk variants combine abstention >0.3 with recognition >0.58 (midway between the 0.43 ignorance floor and base's 0.73): IdkDPO@\u20163.7\u2016, IdkDPO@\u20162.4\u2016, IdkNLL@\u20161.2\u2016, IdkNLL@\u20160.5\u2016, IdkNLL@\u20160.5\u2016, IdkNLL@\u20160.7\u2016",
+  "rows": [
+    {
+      "method": "IdkDPO",
+      "repo": "open-unlearning/unlearn_tofu_Llama-3.2-1B-Instruct_forget10_IdkDPO_lr5e-05_beta0.05_alpha5_epoch10",
+      "published": true,
+      "shift_norm": 3.2482430934906006,
+      "rank1": 0.28,
+      "abstain": 0.495,
+      "abstain_lo": 0.4264572195415849,
+      "abstain_hi": 0.5637312405175983,
+      "degenerate": 0.01,
+      "n": 200
+    },
+    {
+      "method": "IdkDPO",
+      "repo": "open-unlearning/unlearn_tofu_Llama-3.2-1B-Instruct_forget10_IdkDPO_lr1e-05_beta0.05_alpha1_epoch10",
+      "published": false,
+      "shift_norm": 3.677915334701538,
+      "rank1": 0.59,
+      "abstain": 0.99,
+      "abstain_lo": 0.9642775148038204,
+      "abstain_hi": 0.9972533993962251,
+      "degenerate": 0.0,
+      "n": 200
+    },
+    {
+      "method": "IdkDPO",
+      "repo": "open-unlearning/unlearn_tofu_Llama-3.2-1B-Instruct_forget10_IdkDPO_lr1e-05_beta0.05_alpha1_epoch5",
+      "published": false,
+      "shift_norm": 2.4302847385406494,
+      "rank1": 0.61,
+      "abstain": 0.99,
+      "abstain_lo": 0.9642775148038204,
+      "abstain_hi": 0.9972533993962251,
+      "degenerate": 0.0,
+      "n": 200
+    },
+    {
+      "method": "IdkDPO",
+      "repo": "open-unlearning/unlearn_tofu_Llama-3.2-1B-Instruct_forget10_IdkDPO_lr2e-05_beta0.05_alpha1_epoch10",
+      "published": false,
+      "shift_norm": 7.088268756866455,
+      "rank1": 0.39,
+      "abstain": 0.98,
+      "abstain_lo": 0.9497121344948062,
+      "abstain_hi": 0.9921956998236058,
+      "degenerate": 0.0,
+      "n": 200
+    },
+    {
+      "method": "IdkNLL",
+      "repo": "open-unlearning/unlearn_tofu_Llama-3.2-1B-Instruct_forget10_IdkNLL_lr4e-05_alpha5_epoch10",
+      "published": true,
+      "shift_norm": 1.2100296020507812,
+      "rank1": 0.695,
+      "abstain": 0.975,
+      "abstain_lo": 0.9428208558483828,
+      "abstain_hi": 0.9892754385292124,
+      "degenerate": 0.0,
+      "n": 200
+    },
+    {
+      "method": "IdkNLL",
+      "repo": "open-unlearning/unlearn_tofu_Llama-3.2-1B-Instruct_forget10_IdkNLL_lr1e-05_alpha10_epoch10",
+      "published": false,
+      "shift_norm": 0.4658591449260711,
+      "rank1": 0.73,
+      "abstain": 0.435,
+      "abstain_lo": 0.368156071588974,
+      "abstain_hi": 0.5042939091804078,
+      "degenerate": 0.0,
+      "n": 200
+    },
+    {
+      "method": "IdkNLL",
+      "repo": "open-unlearning/unlearn_tofu_Llama-3.2-1B-Instruct_forget10_IdkNLL_lr1e-05_alpha10_epoch5",
+      "published": false,
+      "shift_norm": 0.4539103806018829,
+      "rank1": 0.725,
+      "abstain": 0.42,
+      "abstain_lo": 0.3537348235017175,
+      "abstain_hi": 0.4892805374452139,
+      "degenerate": 0.0,
+      "n": 200
+    },
+    {
+      "method": "IdkNLL",
+      "repo": "open-unlearning/unlearn_tofu_Llama-3.2-1B-Instruct_forget10_IdkNLL_lr2e-05_alpha10_epoch10",
+      "published": false,
+      "shift_norm": 0.7161421775817871,
+      "rank1": 0.73,
+      "abstain": 0.69,
+      "abstain_lo": 0.622826945087378,
+      "abstain_hi": 0.75001157266366,
+      "degenerate": 0.0,
+      "n": 200
+    }
+  ]
+}
