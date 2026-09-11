@@ -63,9 +63,11 @@ Headline numbers below are the **full-scale run**: all 400 forget10 questions
 and a 400-question retain90 sample, per checkpoint, with Wilson intervals
 (`results/*_n400/`). The n=100 pass that preceded it agrees throughout — no
 rate moved by more than 0.05 and no ordering changed — and is kept in
-`results/<experiment>/` for comparison. Two exceptions, both flagged in place:
-the alignment/geometry experiments (02, 03) and the causal steering work
-(04, 04b, 07) were run at n=100 only.
+`results/<experiment>/` for comparison. The direction sweep (02) and alignment
+(03) were rerun at n=400 too and replicate: the anchor cosine is 0.43 at both
+sizes (95% CI tightening from [0.34, 0.50] to [0.39, 0.48]), and AltPO remains
+the only method aligned with both anchors. The causal steering work (04, 04b,
+07, 10) is n=100–200.
 
 | model | abstains on forget10 | 95% CI | recognition | recall |
 |-------|---------------------:|--------|------------:|-------:|
@@ -131,11 +133,20 @@ tighten first with hand labels.
 
 **02 — an epistemic direction exists and is not just content.** The
 diff-in-means direction (IdkDPO abstained-forget minus answered-retain)
-separates held-out rows at CV AUROC 0.96–0.995 from layer 7 on, against a
-random-split control at chance and a base-model forget-vs-retain "content"
-direction at 0.54–0.72. Its cosine with the content direction is 0.2–0.4, and
-it separates abstained from answered *forget* questions (content held fixed)
-at 0.81 at layer 12, the working layer.
+separates held-out rows at CV AUROC 0.96–0.995 from layer 7 on (0.97–0.99 at
+n=400), against a random-split control at chance and a base-model
+forget-vs-retain "content" direction at 0.54–0.72. Its cosine with the content
+direction is 0.2–0.4, and it separates abstained from answered *forget*
+questions (content held fixed) at 0.81 at layer 12, the working layer.
+
+A note on layer choice, since it is the one place the two sample sizes
+disagree. The selection rule picks layer 12 at n=100 and layer 15 at n=400,
+but layers 12–15 sit within 0.02 of each other on the deciding metric, so the
+flip is selection noise rather than a finding. Layer 12 was pre-registered
+(PLAN2 A4) and is reported throughout; layer 15 is kept as a sensitivity check
+(`summary_L15.*`) and is in fact the worse site — the anchor cosine there is
+0.22 against 0.43 at layer 12, which fits layer 15 being the next-token
+readout rather than a representational layer.
 ![layer sweep](results/02_epistemic_direction/layer_sweep.png)
 
 **03 — global drift, then a real anchor, then one candidate.** Raw
