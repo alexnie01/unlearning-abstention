@@ -1,0 +1,17 @@
+{
+  "layer": 12,
+  "cells": {
+    "IdkDPO": {
+      "abstained_forget": 159,
+      "answered_forget": 241,
+      "answered_retain": 400
+    },
+    "IdkNLL": {
+      "abstained_forget": 377,
+      "answered_forget": 23,
+      "answered_retain": 387
+    }
+  },
+  "usable": {
+    "D_dpo": true,
+    "D_nll": 
