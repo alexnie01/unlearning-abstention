@@ -1,76 +1,101 @@
-# Training 8B unlearning checkpoints in the cloud
+# Getting 8B checkpoints: what exists, what to train
 
-open-unlearning publishes unlearned checkpoints for TOFU only at 1B (checked
-2026-09-09), but its training code, its 8B base model
-(`open-unlearning/tofu_Llama-3.1-8B-Instruct_full`) and its 8B retain90 oracle
-already exist. Reproducing the seven 1B checkpoints in `src/config.py` at 8B is
-a few hours on one rented GPU. This document is the recipe; the reasons it
-cannot be done on the M1 Max are at the end.
+Revised 2026-09-11 after checking the whole Hub rather than only the
+`open-unlearning` org. **Most of the 8B work is already done by other people.**
+The gap is small, specific, and cheap to fill.
 
-## What to train
+## What already exists at 8B, forget10
 
-Seven runs, mirroring the 1B checkpoint names in `src/config.py` so results
-are comparable across scale:
+| source | methods | notes |
+|--------|---------|-------|
+| [JoaoBoer](https://huggingface.co/JoaoBoer) | GradDiff, NPO, RMU, SimNPO, UNDIAL | Built on `open-unlearning/tofu_Llama-3.1-8B-Instruct_full`, trained with the open-unlearning framework, ship the full hydra config and TOFU eval outputs. Also has 1B and forget01/forget05. Directly usable. |
+| [jialicheng](https://huggingface.co/jialicheng) | GradAscent, GradDiff, NPO, RMU, SatImp, SimNPO, UNDIAL, WGA | 44 forget10 checkpoints, variants (`cl`/`so`/`standard`) across **two seeds** (42, 87) — multi-seed, which the 1B work never had. No model cards, so verify provenance before relying on them. |
+| `open-unlearning` | — | base (`_full`) and oracles (`retain90/95/99`) only; no unlearned 8B. |
 
-| label | trainer | experiment | forget data | 1B hyperparameters to carry over |
-|-------|---------|-----------|-------------|----------------------------------|
-| IdkDPO | `DPO` | `unlearn/tofu/idk.yaml` | `TOFU_QA_forget_idk` | lr 5e-5, beta 0.05, alpha 5, 10 epochs |
-| IdkNLL | `GradDiff` | `unlearn/tofu/idk.yaml` (forget loss = NLL on IDK answers) | `TOFU_QA_forget_idk` | lr 4e-5, alpha 5, 10 epochs |
-| RMU | `RMU` | `unlearn/tofu/default.yaml` | `TOFU_QA_forget` | lr 5e-5, steering_coeff 10, 10 epochs; layer 10 of 16 → use **layer 20 of 32** at 8B (same relative depth) |
-| AltPO | `DPO` | `unlearn/tofu/default.yaml` with forget data overridden to the alternate-answer set (`TOFU_QA_forget_para`; verify against `docs/repro.md`) | paraphrased alternatives | lr 5e-5, beta 0.1, alpha 1, 10 epochs |
-| NPO | `NPO` | `unlearn/tofu/default.yaml` | `TOFU_QA_forget` | lr 1e-5, beta 0.5, alpha 1, 10 epochs |
-| SimNPO | `SimNPO` | `unlearn/tofu/default.yaml` | `TOFU_QA_forget` | lr 2e-5, beta 4.5, alpha 1, delta 1, gamma 0.125, 10 epochs |
-| GradDiff | `GradDiff` | `unlearn/tofu/default.yaml` | `TOFU_QA_forget` | lr 1e-5, alpha 5, 5 epochs |
+## What is missing, everywhere on the Hub
 
-The AltPO and IdkNLL rows are reconstructions from the checkpoint names;
-`docs/repro.md` and `docs/experiments.md` in open-unlearning list the exact
-command per published checkpoint — check them before launching. Hyperparameters
-were tuned at 1B; carrying them over unchanged is the *comparable* choice, not
-necessarily the best-performing one, and should be stated as such.
+**`IdkDPO`, `IdkNLL`, and `AltPO`.** A Hub-wide search for `idk` at 8B returns
+nothing.
 
-## Hardware and memory
+The Idk pair is not optional here: they are the positive controls. Without a
+model that demonstrably abstains while retaining knowledge, "unlearning is not
+learned abstention" has nothing to be measured against — that was the entire
+reason this project existed at 1B (see `BACKGROUND.md`). AltPO matters
+secondarily: it is the one method whose representational shift resembled the
+abstention anchors.
 
-Their trainer defaults to full fine-tuning with `paged_adamw_32bit`: for 8B
-that is 16 GB weights + 16 GB grads + 64 GB optimizer state ≈ 96 GB before
-activations, plus a frozen 16 GB reference model for NPO / DPO / RMU. Three
-ways to fit it:
+So the training job is **three methods, not seven**, and publishing them is a
+specific contribution rather than a duplicate: the missing positive controls
+for abstention-based unlearning at 8B.
 
-1. **One 80 GB GPU (H100 or A100), 8-bit Adam.** Override
-   `trainer.args.optim=adamw_bnb_8bit` (states drop to ~16 GB) and
-   `trainer.args.gradient_checkpointing=true`, batch 4 × accumulation 8 for
-   the same effective batch of 32. ≈ 64 GB with the reference model. Simplest.
-2. **One 80 GB GPU, their ZeRO-3 offload config**
-   (`configs/accelerate/zero_stage3_offload_config.json`): optimizer state on
-   CPU RAM; needs a box with ≥128 GB RAM; slower per step.
-3. **Two 80 GB GPUs** with ZeRO-2 and no offload — what their `tofu_unlearn.sh`
-   assumes (`CUDA_VISIBLE_DEVICES=0,1`).
+## Which hyperparameters — and why there is no "best"
 
-Option 1 is the recommendation. Rent an H100 80 GB (Lambda, RunPod, Vast — all
-$2–4/h as of 2026) with ≥200 GB disk (each saved 8B checkpoint is 16 GB).
+Do not assume any existing suite is canonical.
 
-## Time and cost
+- open-unlearning's published 1B checkpoints are the benchmark's own picks,
+  selected on TOFU's forget-quality metrics.
+- JoaoBoer's 8B configs differ (his NPO: `gamma 1.0, alpha 2, beta 0.1`;
+  the 1B published NPO: `lr 1e-05, beta 0.5, alpha 1`) and were chosen for a
+  different project — a speculative-decoding study — not as canonical baselines.
 
-One run is ~400 forget + 400 retain examples × ~150 tokens × 10 epochs ≈
-1.2M training tokens. Full fine-tuning is ~6 × 8B FLOPs per token ≈ 6×10¹⁶
-FLOPs; an H100 at a realistic 150–250 TFLOPS sustained does that in
-5–8 minutes. With the reference-model forward pass, gradient checkpointing,
-data loading and per-epoch evaluation, budget **20–40 min per run**, so the
-seven runs are 3–5 GPU-hours. Add 1 hour for setup and 1 hour for uploads:
-**≈ $25–50 total**. Turn off per-epoch TOFU evaluation
-(`trainer.args.eval_strategy=no trainer.args.eval_on_start=false`) unless you
-want their metrics — it is the slowest part at 8B and this repo does its own
-evaluation.
+Experiments 11 and 14 in this repo are the reason to care. Across four
+hyperparameter settings per method, recognition moved by up to 0.33 *within a
+single method*, and the published checkpoint was the outlier for both IdkDPO
+(0.28 recognition where a neighbouring config gives 0.59) and, less starkly,
+others. A single config is a single point on a displacement/knowledge
+trade-off, and which point you pick changes what you conclude.
 
-## Steps
+The methodologically correct response is not to find the "best" config but to
+**train a small sweep and report the curve**, exactly as experiment 11 does at
+1B. That is affordable here (see costs), and doing it at 8B would be novel —
+nobody has a matched-displacement comparison at that scale.
+
+Recommended: for each of IdkDPO, IdkNLL, AltPO, train 3–4 settings spanning
+learning rate and epochs, mirroring the 1B variants that experiment 11 used so
+the two scales are comparable:
+
+| method | settings to mirror from 1B |
+|--------|----------------------------|
+| IdkDPO | lr {1e-05, 2e-05, 5e-05} × {5, 10} epochs, beta 0.05, alpha {1, 5} |
+| IdkNLL | lr {1e-05, 2e-05, 4e-05} × {5, 10} epochs, alpha {5, 10} |
+| AltPO  | lr {1e-05, 2e-05, 5e-05} × {5, 10} epochs, beta {0.05, 0.1}, alpha 1 |
+
+## Cost — a sweep does NOT cost thousands
+
+TOFU forget10 is tiny: 400 forget + 400 retain examples at ~150 tokens, 10
+epochs ≈ **1.2M training tokens**. Full fine-tuning 8B over that is ~6 × 8e9 ×
+1.2e6 ≈ 6×10¹⁶ FLOPs — six to seven minutes of H100 compute. Wall-clock is
+dominated by model loading, the reference-model forward pass, and writing a
+16 GB checkpoint, not by gradient steps.
+
+| scope | runs | GPU-h | @ $3/h |
+|-------|-----:|------:|-------:|
+| the three missing methods, one config each | 3 | ~2 | **$6** |
+| 4 configs × 3 methods (the sweep) | 12 | ~7 | **$21** |
+| + setup, failures, re-runs (2× buffer) | | ~14 | **$42** |
+| + full inference suite at 8B | | ~8 | **$24** |
+| + a second iteration after finding bugs | | ~10 | **$30** |
+| **total with generous buffer** | | **~32** | **~$100** |
+| persistent storage ~300 GB × 1 month | | | ~$30 |
+
+**A grant ask of $150–250 covers the sweep comfortably.** The binding
+constraints are storage (12 checkpoints × 16 GB = 192 GB) and your time, not
+GPU dollars. For reference, reproducing open-unlearning's entire 1B variant
+grid at 8B (~350 runs) would still only be ~$500 of compute — it is the 5.6 TB
+of weights that makes that impractical, not the training.
+
+## Setup
+
+One 80 GB GPU (H100 or A100). Their trainer defaults to `paged_adamw_32bit`,
+which at 8B needs ~96 GB before activations plus a frozen 16 GB reference model
+for NPO/DPO/RMU, so override the optimizer:
 
 ```bash
-# 0. on the GPU box
 git clone https://github.com/locuslab/open-unlearning && cd open-unlearning
-uv venv && source .venv/bin/activate && uv pip install -e . && uv pip install flash-attn --no-build-isolation bitsandbytes
-huggingface-cli login      # the 8B model config points its tokenizer at meta-llama/Llama-3.1-8B-Instruct (gated);
-                           # either accept Meta's license or override tokenizer_args to the open-unlearning full model below
+uv venv && source .venv/bin/activate && uv pip install -e .
+uv pip install flash-attn --no-build-isolation bitsandbytes
+huggingface-cli login
 
-# 1. shared overrides for every run
 COMMON="model=Llama-3.1-8B-Instruct \
   model.model_args.pretrained_model_name_or_path=open-unlearning/tofu_Llama-3.1-8B-Instruct_full \
   model.tokenizer_args.pretrained_model_name_or_path=open-unlearning/tofu_Llama-3.1-8B-Instruct_full \
@@ -79,77 +104,60 @@ COMMON="model=Llama-3.1-8B-Instruct \
   trainer.args.per_device_train_batch_size=4 trainer.args.gradient_accumulation_steps=8 \
   trainer.args.eval_strategy=no trainer.args.eval_on_start=false trainer.args.save_only_model=true"
 
-# 2. one run per method (task_name becomes the output directory saves/unlearn/<task_name>)
-python src/train.py --config-name=unlearn.yaml experiment=unlearn/tofu/default.yaml trainer=RMU \
-  task_name=tofu_8B_forget10_RMU $COMMON \
-  trainer.args.learning_rate=5e-5 trainer.args.num_train_epochs=10 \
-  trainer.method_args.steering_coeff=10 'trainer.method_args.module_regex=model\.layers\.20'
+# IdkNLL — the critical one: the clean abstention control
+python src/train.py --config-name=unlearn.yaml experiment=unlearn/tofu/idk.yaml trainer=GradDiff \
+  task_name=tofu_8B_forget10_IdkNLL_lr4e-05_alpha5_epoch10 $COMMON \
+  trainer.args.learning_rate=4e-5 trainer.args.num_train_epochs=10 trainer.method_args.alpha=5
 
-python src/train.py --config-name=unlearn.yaml experiment=unlearn/tofu/default.yaml trainer=NPO \
-  task_name=tofu_8B_forget10_NPO $COMMON \
-  trainer.args.learning_rate=1e-5 trainer.args.num_train_epochs=10 \
-  trainer.method_args.beta=0.5 trainer.method_args.alpha=1
-
-python src/train.py --config-name=unlearn.yaml experiment=unlearn/tofu/default.yaml trainer=SimNPO \
-  task_name=tofu_8B_forget10_SimNPO $COMMON \
-  trainer.args.learning_rate=2e-5 trainer.args.num_train_epochs=10 \
-  trainer.method_args.beta=4.5 trainer.method_args.alpha=1 trainer.method_args.delta=1 trainer.method_args.gamma=0.125
-
-python src/train.py --config-name=unlearn.yaml experiment=unlearn/tofu/default.yaml trainer=GradDiff \
-  task_name=tofu_8B_forget10_GradDiff $COMMON \
-  trainer.args.learning_rate=1e-5 trainer.args.num_train_epochs=5 trainer.method_args.alpha=5
-
+# IdkDPO
 python src/train.py --config-name=unlearn.yaml experiment=unlearn/tofu/idk.yaml trainer=DPO \
-  task_name=tofu_8B_forget10_IdkDPO $COMMON \
+  task_name=tofu_8B_forget10_IdkDPO_lr5e-05_beta0.05_alpha5_epoch10 $COMMON \
   trainer.args.learning_rate=5e-5 trainer.args.num_train_epochs=10 \
   trainer.method_args.beta=0.05 trainer.method_args.alpha=5
 
-python src/train.py --config-name=unlearn.yaml experiment=unlearn/tofu/idk.yaml trainer=GradDiff \
-  task_name=tofu_8B_forget10_IdkNLL $COMMON \
-  trainer.args.learning_rate=4e-5 trainer.args.num_train_epochs=10 trainer.method_args.alpha=5
-
-# AltPO: confirm the forget dataset override in docs/repro.md first, then
+# AltPO — confirm the alternate-answer dataset override against docs/repro.md first
 python src/train.py --config-name=unlearn.yaml experiment=unlearn/tofu/default.yaml trainer=DPO \
-  data/datasets@data.forget=TOFU_QA_forget_para task_name=tofu_8B_forget10_AltPO $COMMON \
+  data/datasets@data.forget=TOFU_QA_forget_para \
+  task_name=tofu_8B_forget10_AltPO_lr5e-05_beta0.1_alpha1_epoch10 $COMMON \
   trainer.args.learning_rate=5e-5 trainer.args.num_train_epochs=10 \
   trainer.method_args.beta=0.1 trainer.method_args.alpha=1
-
-# 3. optional: epoch-5 snapshots for PLAN2 §C2 — add to any run
-#    trainer.args.save_strategy=epoch trainer.args.save_total_limit=2
-
-# 4. push each checkpoint to a private HF repo (16 GB each; scp works too)
-huggingface-cli upload --private <you>/tofu_8B_forget10_RMU saves/unlearn/tofu_8B_forget10_RMU
 ```
 
-Run the seven commands sequentially in one `nohup` script; they do not need
-to share the box. Before shutting the instance down, spot-check each
-checkpoint with a handful of forget10 questions under the chat template — a
-run that diverged (RMU and SimNPO are the touchy ones at a new depth) shows
-up as gibberish or as verbatim base answers and should be re-run with the
-learning rate halved before you pay for the download.
+Vary `learning_rate` / `num_train_epochs` / `alpha` per the sweep table, giving
+each run its own `task_name`. Spot-check every checkpoint on a few forget10
+questions before paying to download it — a diverged run shows up immediately as
+gibberish or as verbatim base answers.
 
-## Bringing them home
+**Run the inference on the same box.** 8B inference on an H100 is 5–10× faster
+than this Mac (where experiment 05 measured 2.8 s/prompt for the 8B oracle), so
+the full experiment suite is 2–3 hours there versus 12–15 locally. Bringing
+192 GB of weights home to run them slowly is the worse trade. The judging half
+needs Ollama or an equivalent on that box.
 
-Add a `CHECKPOINTS_8B` dict to `src/config.py` mirroring `CHECKPOINTS`, with
-`MODEL_LAYER_INT` entries at twice the 1B depth (RMU 20, default 28). The
-`open-unlearning` config for Llama-3.1-8B-Instruct uses
-`date_string: 10 Apr 2025` in its chat template; if you want prompts
-byte-identical to their eval, set `DATE` in `src/prompting.py` to that (it
-is currently the template default, `26 Jul 2024`).
+## Bringing results home
 
-Disk is the local constraint, not compute: seven 8B checkpoints are ~112 GB
-and the laptop had 46 GB free on 2026-09-09. Either an external SSD, or keep
-two or three resident at a time and cache all-layer activations
-(`results/activations/`, ~0.4 GB per model per prompt set at n=400) before
-deleting weights — 02 and 03 run entirely from that cache, and only the
-causal experiments need weights back.
+Add `CHECKPOINTS_8B` to `src/config.py` mirroring `CHECKPOINTS`, with
+`MODEL_LAYER_INT` at twice the 1B depth (RMU 20, default 28). open-unlearning's
+8B model config renders the chat template with `date_string: 10 Apr 2025`;
+set `DATE` in `src/prompting.py` to match if you want byte-identical prompts.
 
-## Why not locally
+Disk is the local constraint: cache all-layer activations
+(`results/activations*/`, ~0.4 GB per model per prompt set at n=400) while each
+checkpoint is resident, then delete the weights. Experiments 02, 03 and 11 run
+entirely from that cache; only the causal experiments need weights back.
 
-The M1 Max has a 25 GB MPS budget. Full fine-tuning of 8B needs 64–128 GB;
-of 3B, 24–48 GB. LoRA/QLoRA on an 8B 4-bit base fits (via MLX, since
-bitsandbytes has no MPS backend) at roughly 100–150 tokens/s, i.e. 2.5–4 h
-per run plus a day or two to reimplement the seven losses outside their
-Trainer, and rank-limited LoRA updates are a different intervention from the
-full-parameter 1B checkpoints, so scale comparisons would be confounded by
-method-of-update. The cloud route is cheaper in every currency but one login.
+## If you publish the checkpoints
+
+TOFU's forget set is 200 synthetic authors, so there is no infohazard — unlike
+WMDP, where releasing an "unlearned" model whose knowledge is partly
+recoverable would be genuinely risky. Practical notes:
+
+- Mirror open-unlearning's naming so the checkpoints are findable and
+  comparable; the Llama 3.1 license requires "Llama" in derivative names.
+- Offer them to `locuslab/open-unlearning` rather than only a personal
+  namespace — canonical location is worth more than the weights.
+- Put the recognition numbers in the model card. A checkpoint labelled
+  "unlearned" shipped with evidence of what unlearning did *not* remove is a
+  more useful object than a clean claim.
+- Release the sweep, not one config per method. One checkpoint per method is
+  what produced the confound experiment 11 spent its whole budget undoing.
