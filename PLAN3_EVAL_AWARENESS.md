@@ -6,7 +6,15 @@ detects it is being evaluated, and if so, is the capability still in there" —
 but the instrument is nearly the same one, because both are questions about a
 gap between what a model *can* do and what it *does*.
 
-Status: scoping only. Nothing here has been run.
+**Status: PARKED, 2026-09-10.** Nothing here has been run, and it is not the
+next thing to do. The link to this project is methodological, not phenomenal —
+unlearning creates an *unconditional* capability gap, eval-awareness would
+create a *conditional* one, and nothing here suggests unlearning induces
+situational awareness. What transfers is the apparatus and one finding: that
+identical behaviour can sit on intact or destroyed knowledge (IdkNLL 0.70 vs
+IdkDPO 0.30 recognition at the same abstention behaviour), which is exactly the
+sandbagging-detection problem. Kept because that is worth writing down, not
+because it is queued.
 
 ## Why this transfers
 
