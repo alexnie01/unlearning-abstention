@@ -304,6 +304,23 @@ IdkDPO checkpoint — abstain 0.50, recognition 0.28 — is the outlier, not the
 family. Abstention training generally preserves recognition; the
 knows-and-abstains cell is easy to reach, and no unlearning method reaches it.
 
+**13 — the abstention tracks the fact, not the phrasing.** TOFU ships a
+`paraphrased_question` for every item: same fact, different surface form, never
+seen in training. If IdkNLL's abstention were a memorised string pattern it
+would collapse here, and every comparison drawn against it would weaken. It
+does not: IdkNLL abstains 0.65 on original phrasings and 0.59 on paraphrases
+(−0.06), IdkDPO 0.45 → 0.40, and recognition is flat for every model
+(IdkNLL 0.687 → 0.693, NPO 0.660 → 0.667). The methods under test stay at
+≤0.03 under both. The reference implementation of learned abstention
+generalises over the underlying fact, so it is a fair yardstick.
+
+Note that IdkNLL's abstention rate here (0.65) is lower than the 0.94 measured
+in 01. The prompts are the same questions; the difference is that 01 judged
+with the phrase matcher plus adjudication over 400 rows, while 13 uses the
+llama3.2 judge alone over 150. The *paraphrase* comparison is within-experiment
+and unaffected, but the absolute level is instrument-dependent, which is the
+same judge-sensitivity flagged under 01.
+
 **08 — an instrument that failed, recorded as such.** To test whether the
 low-recognition models still *represent* correctness internally, I trained a
 linear probe on answer-final activations to separate true from perturbed

@@ -1,0 +1,46 @@
+{
+  "n": 150,
+  "verdict": "Abstention survives paraphrase (worst positive control retains 88% of its rate), so it tracks the fact rather than the phrasing.",
+  "table": [
+    {
+      "model": "base",
+      "orig": 0.0,
+      "para": 0.006666666666666667,
+      "delta": 0.006666666666666667,
+      "rec_orig": 0.7133333333333334,
+      "rec_para": 0.74
+    },
+    {
+      "model": "IdkDPO",
+      "orig": 0.4533333333333333,
+      "para": 0.4,
+      "delta": -0.05333333333333329,
+      "rec_orig": 0.31333333333333335,
+      "rec_para": 0.3466666666666667
+    },
+    {
+      "model": "IdkNLL",
+      "orig": 0.6466666666666666,
+      "para": 0.5866666666666667,
+      "delta": -0.05999999999999994,
+      "rec_orig": 0.6866666666666666,
+      "rec_para": 0.6933333333333334
+    },
+    {
+      "model": "RMU",
+      "orig": 0.006666666666666667,
+      "para": 0.03333333333333333,
+      "delta": 0.026666666666666665,
+      "rec_orig": 0.18666666666666668,
+      "rec_para": 0.21333333333333335
+    },
+    {
+      "model": "NPO",
+      "orig": 0.013333333333333334,
+      "para": 0.006666666666666667,
+      "delta": -0.006666666666666667,
+      "rec_orig": 0.66,
+      "rec_para": 0.6666666666666666
+    }
+  ]
+}
