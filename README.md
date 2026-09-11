@@ -173,7 +173,7 @@ lacked, and it passes. Against both anchors:
 ![alignment](results/03_alignment/alignment_bars.png)
 ![by layer](results/03_alignment/alignment_by_layer.png)
 
-Caveat: read 03 alongside 14 — the anchors are less distinct than they looked. The IdkNLL-derived *direction* is also 0.77 content (it abstains on every
+Caveat: read 03 alongside 14 and 15 — the anchors are less distinct than they looked, and the direction is construction-dependent. The IdkNLL-derived *direction* is also 0.77 content (it abstains on every
 forget row), and a label-permutation null shows the IdkDPO direction's
 alignment does not depend on *which* forget rows abstained — the instrument
 is "how an abstention finetune moves forget representations relative to
@@ -320,6 +320,40 @@ with the phrase matcher plus adjudication over 400 rows, while 13 uses the
 llama3.2 judge alone over 150. The *paraphrase* comparison is within-experiment
 and unaffected, but the absolute level is instrument-dependent, which is the
 same judge-sensitivity flagged under 01.
+
+**15 — the "epistemic direction" is construction-dependent, and 03 should be
+read through that.** Experiment 02 built the direction from IdkDPO
+(abstained-forget minus answered-retain) — and 14 then showed that checkpoint
+is the outlier of its own family. Building the same direction four defensible
+ways gives four different vectors:
+
+| | D_dpo | D_nll | W_dpo | W_nll | content |
+|---|---:|---:|---:|---:|---:|
+| **D_dpo** (02's choice) | 1.00 | 0.50 | 0.58 | −0.01 | 0.27 |
+| **D_nll** (IdkNLL, same construction) | 0.50 | 1.00 | 0.22 | 0.15 | **0.71** |
+| **W_dpo** (IdkDPO, within-forget) | 0.58 | 0.22 | 1.00 | 0.19 | **0.06** |
+| **W_nll** (IdkNLL, within-forget) | −0.01 | 0.15 | 0.19 | 1.00 | 0.12 |
+
+and the ranking of methods by alignment changes with the choice — D_dpo puts
+SimNPO and AltPO on top, W_dpo puts SimNPO and RMU, D_nll puts AltPO and NPO.
+
+Cell sizes decide which constructions deserve any weight. IdkNLL abstains on
+94% of forget10, so its answered-forget cell holds 23 rows; a centroid from 23
+points in 2048 dimensions is noise, which is why **W_nll** is near-orthogonal
+to everything. And because it abstains on nearly all of forget10, **D_nll**'s
+forget-vs-retain contrast is close to the author-set contrast — 0.71 with
+content. **W_dpo** is the only construction that is both well-estimated (159 vs
+241 rows) and content-clean (0.06 with content), which makes it the best
+abstention axis available here.
+
+Under W_dpo, AltPO — the one method 03 called abstention-like — sits at −0.03,
+while SimNPO (0.31) and RMU (0.21) lead. So **03's specific verdict about AltPO
+does not survive the change of direction** and should be treated as contingent
+on how the direction was built. What does not depend on the choice: no method
+under test comes near the positive controls' own values on any construction,
+and the behavioural result (01) involves no direction at all.
+
+![direction provenance](results/15_direction_provenance/direction_provenance.png)
 
 **08 — an instrument that failed, recorded as such.** To test whether the
 low-recognition models still *represent* correctness internally, I trained a
