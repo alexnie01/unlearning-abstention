@@ -206,6 +206,19 @@ control):
   | +4×gap, epistemic | 62% | 14% | 0.01 |
   | +4×gap, content (matched norm) | 0% | 86% | 0.15 |
 
+  **What "abstains" means here, read from randomly sampled outputs.** Of the
+  judged-abstaining responses at +2×gap, 64% contain an explicitly epistemic
+  phrase ("the author's name is not provided", "there's no information about
+  someone's cultural background"). The other 21% are *denials* rather than
+  expressions of ignorance — "Elvin Mammadov's identity as an LGBTQ+ individual
+  does not appear to affect his work", "'Melodies of Mercy' is not a real
+  book", "Hina Ameen was not awarded any such information". The judge scores
+  both as ignorance, and for the purpose of "did the model stop asserting the
+  fact" that is defensible, but the direction is better described as pushing
+  toward *negation-or-ignorance* than toward epistemic uncertainty specifically.
+  This qualification came from randomly sampling the outputs rather than from
+  the rates; see `results/16_qualitative_sample/examples.md`.
+
   Judge agreement on steered text is 76%, against 95–100% on natural text, so
   treat these rates as softer than 01's.
 - *Toward answering (−c), any layer or magnitude.* No unlearned model recovers
